@@ -13,7 +13,7 @@ I am happy about every issue shared with me as it allows me to make this package
 
 ## Important information about your environment
 
-This package was developed and tested on Unix (Linux) servers. On Windows we just tested it partly. So for every error occurring on a Windows system please open an issue and be patient when it comes to my support :) I try my best to help you 
+This package was developed and tested on Unix (Linux) servers. On Windows we just tested it partly. So for every error occurring on a Windows system please open an issue and be patient when it comes to my support :) I try my best to help you
 
 ## Installation
 
@@ -43,6 +43,12 @@ There you should find out if running the command `pdflatex` works in cmd.
 **tempPath**
 This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
 It is important that you always **start your path without a slash** and **end your path with a slash** (e.g. app/pdf/)
+
+## Using graphics inside of your LaTeX files
+
+Where exactly pdflatex looks for graphics included inside of a .tex file I am not really sure.
+What helped me the most was to always give the absolute path to a graphic like `\includegraphics[scale=0.06]{/absolute/path/to/www/storage/graphics/file.pdf}` for example.
+If you have a better working idea please help me and share your knowledge with me :)
 
 ## Dry Run :
 
