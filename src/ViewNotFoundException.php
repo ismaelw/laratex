@@ -1,6 +1,6 @@
 <?php
 
-namespace Ismaelw;
+namespace Ismaelw\LaraTeX;
 
 class ViewNotFoundException extends \Exception
 {

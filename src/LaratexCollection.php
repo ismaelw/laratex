@@ -32,11 +32,11 @@ class LaratexCollection
 
     /**
      * Add latex instance to collection
-     * @param  Latex $latex
+     * @param  LaraTeX $latex
      *
      * @return void
      */
-    public function add(Latex $latex)
+    public function add(LaraTeX $latex)
     {
         $this->collection[] = $latex;
 
@@ -108,7 +108,7 @@ class LaratexCollection
             $zip->close();
         }
         else{
-            throw new LatextZipFailedException('Could not generate zip file.');
+            throw new LaratexZipFailedException('Could not generate zip file.');
         }
 
         return $zipFile;
@@ -118,13 +118,13 @@ class LaratexCollection
      * PPdf generation
      *
      * @return void
-     * @throws LatextEmptyCollectionException
+     * @throws LaratexEmptyCollectionException
      */
     private function generate(){
 
         if(count($this->collection) == 0){
 
-            throw new LatextEmptyCollectionException('No latex documents added in latex collection. Nothing to generate.');
+            throw new LaratexEmptyCollectionException('No latex documents added in latex collection. Nothing to generate.');
         }
 
         $this->moveToCollectionDir();
@@ -159,15 +159,12 @@ class LaratexCollection
      * @return void
      */
     private function makeCollectionDir(){
-
         $tmpDir = sys_get_temp_dir();
 
         $this->collectionDir = $tmpDir . DIRECTORY_SEPARATOR .'texcollection'.str_random(10);
-
         \File::makeDirectory($this->collectionDir, 0755, true, true);
 
         register_shutdown_function(function(){
-
             if(\File::exists($this->collectionDir)){
                 \File::deleteDirectory($this->collectionDir);
             }

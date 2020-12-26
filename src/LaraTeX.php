@@ -78,7 +78,7 @@ class LaraTeX
      *
      * @param  string $nameInsideZip
      *
-     * @return Latex
+     * @return LaraTeX
      */
     public function setName($nameInsideZip){
         if(is_string($nameInsideZip)){
@@ -101,16 +101,12 @@ class LaraTeX
      *
      * @param  array $data
      *
-     * @return Latex
+     * @return LaraTeX
      */
     public function with($data){
     	$this->data = $data;
     	return $this;
     }
-
-	public function test() {
-		return $this->binPath;
-	}
 
     /**
      * Dry run
@@ -124,7 +120,7 @@ class LaraTeX
 
         // if (!$process->isSuccessful()) {
         //
-        //     throw new LatextException($process->getOutput());
+        //     throw new LaratexException($process->getOutput());
         // }
 
         $this->renderedTex = File::get(dirname(__FILE__).'/dryrun.tex');
@@ -166,7 +162,7 @@ class LaraTeX
         $this->render();
         $pdfPath = $this->generate();
         $fileMoved = File::move($pdfPath, $location);
-        \Event::dispatch(new LatexPdfWasGenerated($location, 'savepdf', $this->metadata));
+        \Event::dispatch(new LaratexPdfWasGenerated($location, 'savepdf', $this->metadata));
         return $fileMoved;
     }
 
@@ -187,7 +183,7 @@ class LaraTeX
             $fileName = basename($pdfPath);
         }
 
-        \Event::dispatch(new LatexPdfWasGenerated($fileName, 'download', $this->metadata));
+        \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'download', $this->metadata));
 
         return \Response::download($pdfPath, $fileName, [
               'Content-Type' => 'application/pdf',
@@ -214,7 +210,7 @@ class LaraTeX
         $process    = new Process($cmd);
         $process->run();
         if (!$process->isSuccessful()) {
-            \Event::dispatch(new LatexPdfFailed($fileName, 'download', $this->metadata));
+            \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
         	$this->parseError($tmpfname, $process);
         }
 
@@ -260,18 +256,18 @@ class LaraTeX
      *
      * @param  string $tmpfname
      *
-     * @throws \LatextException
+     * @throws \LaratexException
      */
     private function parseError($tmpfname, $process){
 
     	$logFile = storage_path($this->tempPath . $tmpfname . 'log');
 
     	if(!File::exists($logFile)){
-    		throw new LatextException($process->getOutput());
+    		throw new LaratexException($process->getOutput());
     	}
 
     	$error = File::get($logFile);
-    	throw new LatextException($error);
+    	throw new LaratexException($error);
     }
 
 }
