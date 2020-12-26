@@ -195,64 +195,65 @@ class LaraTeX
      *
      * @return string
      */
-    private function generate(){
+	 private function generate(){
 
-    	$fileName = Str::random(10);
-        $tmpfname = tempnam(storage_path($this->tempPath), $fileName);
-        $tmpDir = storage_path($this->tempPath);
-        chmod($tmpfname, 0755);
+     	$fileName = Str::random(10);
+         $basetmpfname = tempnam(storage_path($this->tempPath), $fileName);
+         $tmpfname = preg_replace('/\\.[^.\\s]{3,4}$/', '', $basetmpfname);
+         rename($basetmpfname, $tmpfname);
+         $tmpDir = storage_path($this->tempPath);
+         chmod($tmpfname, 0755);
 
-        File::put($tmpfname, $this->renderedTex);
+         File::put($tmpfname, $this->renderedTex);
 
-        $program    = $this->binPath ? $this->binPath : 'pdflatex';
-        $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
+         $program    = $this->binPath ? $this->binPath : 'pdflatex';
+         $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
 
-        $process    = new Process($cmd);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
-        	$this->parseError($tmpfname, $process);
-        }
+         $process    = new Process($cmd);
+         $process->run();
+         if (!$process->isSuccessful()) {
+             \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
+         	$this->parseError($tmpfname, $process);
+         }
 
-        $this->teardown($tmpfname);
+         $this->teardown($tmpfname);
 
-        register_shutdown_function(function () use ($tmpfname) {
+         register_shutdown_function(function () use ($tmpfname) {
+             if(File::exists($tmpfname . '.pdf')){
+                 File::delete($tmpfname . '.pdf');
+             }
+         });
 
-            if(File::exists($tmpfname . '.pdf')){
-                File::delete($tmpfname . '.pdf');
-            }
-        });
+         return $tmpfname.'.pdf';
+     }
 
-        return $tmpfname.'.pdf';
-    }
+ 	/**
+      * Teardown secondary files
+      *
+      * @param  string $tmpfname
+      *
+      * @return void
+      */
+     private function teardown($tmpfname)
+     {
+         if(File::exists($tmpfname)) {
+             File::delete($tmpfname);
+         }
+         if(File::exists($tmpfname . '.aux')) {
+             File::delete($tmpfname . '.aux');
+         }
+         if(File::exists($tmpfname . '.log')) {
+             File::delete($tmpfname . '.log');
+         }
+         if(File::exists($tmpfname . '.out')) {
+             File::delete($tmpfname . '.out');
+         }
+
+         return $this;
+     }
 
 	/**
-     * Teardown secondary files
-     *
-     * @param  string $tmpfname
-     *
-     * @return void
-     */
-    private function teardown($tmpfname)
-    {
-        if(File::exists(storage_path($this->tempPath . $tmpfname))) {
-            File::delete(storage_path($this->tempPath . $tmpfname));
-        }
-        if(File::exists(storage_path($this->tempPath . $tmpfname . '.aux'))) {
-            File::delete(storage_path($this->tempPath . $tmpfname . '.aux'));
-        }
-        if(File::exists(storage_path($this->tempPath . $tmpfname . '.log'))) {
-            File::delete(storage_path($this->tempPath . $tmpfname . '.log'));
-        }
-        if(File::exists(storage_path($this->tempPath . $tmpfname . '.out'))) {
-            File::delete(storage_path($this->tempPath . $tmpfname . '.out'));
-        }
-
-        return $this;
-    }
-
-	/**
-     * Throw error from log gile
+     * Throw error from log file
      *
      * @param  string $tmpfname
      *
