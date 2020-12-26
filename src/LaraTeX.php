@@ -261,7 +261,7 @@ class LaraTeX
      */
     private function parseError($tmpfname, $process){
 
-    	$logFile = storage_path($this->tempPath . $tmpfname . 'log');
+    	$logFile = $tmpfname . 'log';
 
     	if(!File::exists($logFile)){
     		throw new LaratexException($process->getOutput());

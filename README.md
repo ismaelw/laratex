@@ -1,3 +1,4 @@
+
 # A laravel package to generate pdfs using latex
 
 <p align="center">
@@ -7,23 +8,342 @@
 ## NOTE
 
 This package is currently in development!
-The usage is not possible at the moment.
-Please use [my other package here](https://github.com/ismaelw/laravel-php-latex)
+You can use this package already but please allow errors and also please share them with me!
+I am happy about every issue shared with me as it allows me to make this package better and better.  
+
+## Important information about your environment
+
+This package was developed and tested on Unix (Linux) servers. On Windows we just tested it partly. So for every error occurring on a Windows system please open an issue and be patient when it comes to my support :) I try my best to help you 
 
 ## Installation
 
-You can install the package via composer:
+You can install the package with composer:
 
 ```bash
 composer require ismaelw/laratex
 ```
 
+## Configuration
+
+To load the config file with php artisan run the following command:
+
+```bash
+php artisan vendor:publish --tag=config
+```
+After this please make sure to configure your LaraTeX installation.
+In your LaraTeX Config file `\config\laratex.php` you can configure two settings:
+
+**binPath**
+If your system doesn't allow to just run the command line command "pdflatex" you may specify the correct one.
+On Unix systems you can find out which bin path to use by running the command `which pdflatex`
+
+If you are running this package with on a windows system please find check this in cmd.exe before.
+There you should find out if running the command `pdflatex` works in cmd.
+
+**tempPath**
+This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
+It is important that you always **start your path without a slash** and **end your path with a slash** (e.g. app/pdf/)
+
+## Dry Run :
+
+Before diving into the usage directly, it is important that you make sure that the required programs are installed properly on your server. The package comes with a dryrun method. It will automatically generate a file called `dryrun.pdf` if everything is set up properly on the server. If not please double-check the configuration of the `binPath` above.  
+
+~~~php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Ismaelw\LaraTeX\LaraTeX;
+
+class TestController extends Controller
+{
+    /**
+     * Download PDF generated from latex
+     *
+     * @return Illuminate\Http\Response
+     */
+    public function download(){
+        return (new LaraTeX)->dryRun();
+    }
+}
+~~~
+
+Dryrun will download a beautifully clean test pdf if pdflatex is setup properly.
+
 ## Usage
 
-Usage details following
+With this package you have multiple options. You can render a PDF file and download it directly, save it somewhere, just get the tex content or bulk download a ZIP file containing multiple generated PDF files.
+
+### Preparing a Laravel View with our LaTeX Content
+Create a view file inside `resources/views/latex/tex.blade.php`
+You are of course free to create your view files wherever you want inside of your resources folder.
+Just make sure to define the view to use correctly later.
+
+~~~php
+\documentclass[a4paper,9pt,landscape]{article}
+
+\usepackage{adjustbox}
+\usepackage[english]{babel}
+\usepackage[scaled=.92]{helvet}
+\usepackage{fancyhdr}
+\usepackage[svgnames,table]{xcolor}
+\usepackage[a4paper,inner=1.5cm,outer=1.5cm,top=1cm,bottom=1cm,bindingoffset=0cm]{geometry}
+\usepackage{blindtext}
+\geometry{textwidth=\paperwidth, textheight=\paperheight, noheadfoot, nomarginpar}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\pagestyle{fancy}
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+
+\fancyfoot[C]{\fontsize{8pt}{8pt}\selectfont Above document is auto-generated.}
+\renewcommand{\footrulewidth}{0.2pt}
 
 
-### Changelog
+\begin{document}
+
+\section*{\centering{Test Document}}
+
+\begin{center}
+    \item[Name :] {{ $name }}
+    \item[Date of Birth :] {{ $dob }}
+\end{center}
+
+\blindtext
+
+\begin{table}[ht]
+\centering
+\begin{adjustbox}{center}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{|l|l|}
+
+\hline
+
+\rowcolor[HTML]{E3E3E3}
+\textbf{Sr. No}
+& \textbf{Addresses}\\
+\hline
+
+@foreach($addresses as $key => $address)
+    \renewcommand{\arraystretch}{1.5}
+    {{ $key }} & {{ $address }} \\
+    \hline
+@endforeach
+
+\end{tabular}
+\end{adjustbox}
+\caption{Address Summmary}
+\end{table}
+
+\blindtext
+
+\vfill
+\centering
+
+\end{document}
+~~~
+You can see how we have easily used blade directives for `{{ $name }}` to show a name or `@foreach` to show addresses in a table to dynamically generate the content.
+
+For more complex LaTeX files where you may need to use blade directives like `{{ $var }}` inside of a LaTeX command which already uses curly brackets (e.g. `\textbf{}`) you can always use Laravels `@php @endphp` method or plain PHP like `<?php echo $var; ?>` or `<?= $var ?>` (Example: `\textbf{<?= $var ?>}`).
+
+### Download a PDF file
+~~~php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Ismaelw\LaraTeX\LaraTeX;
+
+class TestController extends Controller
+{
+    /**
+     * Download PDF generated from LaTex
+     *
+     * @return Illuminate\Http\Response
+     */
+    public function download(){
+
+        return (new LaraTeX('latex.tex'))->with([
+            'name' => 'John Doe',
+            'dob' => '01/01/1994',
+            'addresses' => [
+                '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+                '7408 South San Juan Ave. Beaver Falls, PA 15010'
+            ]
+        ])->download('test.pdf');
+    }
+}
+~~~
+If you named your blade file differently or you have it in another folder make sure to set the blade file correctly:
+`return (new LaraTeX('folder.file'))`
+
+### Save a PDF file
+To save a PDF File use the `savePdf` Method.
+~~~php
+(new LaraTeX('latex.tex'))->with([
+    'name' => 'John Doe',
+    'dob' => '01/01/1994',
+    'addresses' => [
+        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    ]
+])->savePdf(storage_path('app/export/test.pdf'));
+~~~
+Make sure that the destination folder exists inside of your `storage` folder.
+
+### Just render the tex data
+~~~php
+$tex = new LaraTeX('latex.tex'))->with([
+    'name' => 'John Doe',
+    'dob' => '01/01/1994',
+    'addresses' => [
+        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    ]
+])->render();
+~~~
+
+### Using Raw Tex :
+
+If you do not want to use views as tex files, but already have tex content, or are using other libraries to generate tex content, you can use `RawTex` class instead of passing a view path :
+
+~~~php
+use Ismaelw\LaraTeX\LaraTeX;
+use Ismaelw\LaraTeX\RawTex;
+
+...
+
+$tex = new RawTex('your_raw_tex_content_string.....');
+
+return (new LaraTeX($tex))->with([
+    'name' => 'John Doe',
+    'dob' => '01/01/1994',
+    'addresses' => [
+        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    ]
+])->download('test.pdf');
+~~~
+
+###  Bulk download in a ZIP archive :
+
+You want to export multiple PDFs inside of a ZIP-Archive? This package has that functionality ready for you. This gives a great flexibility for you. However, make sure you are not passing too many PDFs together, as it is going to consume a good amount of server memory to export those together.
+
+~~~php
+$latexCollection = (new LaratexCollection());
+$users = User::limit(10)->get();
+foreach ($users as $user) {
+    $pdfName = $user->first_name.'-'.$user->last_name.'-'.$user->id.'.pdf';
+
+    // Create LaraTeX instance
+    $laratex= (new LaraTeX('latex.report'))->with([
+        'user' => $user
+    ])->setName($pdfName);
+
+    // Add it to latex collection
+    $latexCollection->add($laratex);
+}
+
+// Download the zip
+return $latexCollection->downloadZip('Users.zip');
+
+// OR you can also save it
+$latexCollection->saveZip(storage_path('app/pdf/zips/Users.zip'));
+~~~
+
+## Listening to events :
+
+Whenever a pdf is succesfully generated, it fires the event `LaratexPdfWasGenerated`. Similarly whenever the PDF generation fails it fires the event `LaratexPdfFailed`.
+
+These events are important if you need to perform some actions depending on the generation status, like updating the database. But mostly these PDF files have some metadata like the user the PDF belongs to or to which order the PDF belongs. You can pass these metadata while instantiating `LaraTeX` as a second argument.
+
+This metadata is then passed back to you from the fired event, which makes it much more meaningful to listen. The metadata can be anything, it can be a string, numeric, an array, an object, a collection and so on. You can pass the metadata depending on your desired logic.
+
+~~~php
+// $user will be our metadata in this example
+$user = Auth::user();
+
+(new LaraTeX('latex.tex', $user))->with([
+    'name' => 'John Doe',
+    'dob' => '01/01/1994',
+    'addresses' => [
+        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    ]
+])->savePdf(storage_path('app/pdf/test.pdf'));
+~~~
+
+Then you can define a listener like :
+
+~~~php
+<?php
+
+namespace App\Listeners;
+
+use Ismaelw\LaraTeX\LaratexPdfWasGenerated;
+
+class LaratexPdfWasGeneratedConfirmation
+{
+    /**
+     * Create the event listener.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Handle the event.
+     *
+     * @param  LatexPdfWasGenerated  $event
+     * @return void
+     */
+    public function handle(LaratexPdfWasGenerated$event)
+    {
+        // Path  of pdf in case in was saved
+        // OR
+        // Downloaded name of pdf file in case it was downloaded in response directly
+        $pdf = $event->pdf;
+
+        // download OR savepdf
+        $action = $event->action;
+
+        // metadata $user in this example
+        $user = $event->metadata;
+
+        // Perform desired actions
+    }
+}
+~~~
+
+## Garbage Collection :
+
+When you export the PDF, a few extra files are generated by `pdflatex` along with your PDF (e.g. `.aux`, `.log`, `.out` etc.). The package takes care of the garbage collection process internally. It makes sure that no files are remaining when the PDF is generated or even when any error occures.
+
+This makes sure the server does not waste it's space keeping those files.
+
+## Error Handling :
+
+We are using the application `pdflatex` from `texlive` to generate PDFs. If a syntax error occures in your tex file, it logs the error into a log file. Or if it is turned off, it shows the output in the console.
+
+The package takes care of the same logic internally and throws `ViewNotFoundException`. The exception will have the entire information about the error easily available for you to debug.
+
+## Contribution
+
+Please feel free to contribute if you want to add new functionalities to this package.
+
+## Credits
+
+This Package was inspired alot by the `laravel-php-latex` package created by [Techsemicolon](https://github.com/techsemicolon/laravel-php-latex)
+For better compatibility and better configuration handling I decided to create this package.
+## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
