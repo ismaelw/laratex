@@ -195,9 +195,9 @@ class LaraTeX
      *
      * @return string
      */
-	 private function generate(){
-
-     	$fileName = Str::random(10);
+	 private function generate()
+	 {
+     	 $fileName = Str::random(10);
          $basetmpfname = tempnam(storage_path($this->tempPath), $fileName);
          $tmpfname = preg_replace('/\\.[^.\\s]{3,4}$/', '', $basetmpfname);
          rename($basetmpfname, $tmpfname);

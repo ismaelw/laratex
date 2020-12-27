@@ -6,6 +6,7 @@ use Ismaelw\LaraTeX\LaraTeX;
 use Ismaelw\LaraTeX\LaratexEmptyCollectionException;
 use Ismaelw\LaraTeX\LaratexException;
 use Ismaelw\LaraTeX\LaratexZipFailedException;
+use Illuminate\Support\Str;
 
 class LaratexCollection
 {
@@ -143,7 +144,7 @@ class LaratexCollection
 
         foreach ($this->collection as $latex) {
 
-            $name = $latex->getName() ? $latex->getName() : str_random(4) . '.pdf';
+            $name = $latex->getName() ? $latex->getName() : Str::random(4) . '.pdf';
             $pdf = $this->collectionDir . DIRECTORY_SEPARATOR . $name;
             $latex->savePdf($pdf);
 
@@ -161,7 +162,7 @@ class LaratexCollection
     private function makeCollectionDir(){
         $tmpDir = sys_get_temp_dir();
 
-        $this->collectionDir = $tmpDir . DIRECTORY_SEPARATOR .'texcollection'.str_random(10);
+        $this->collectionDir = $tmpDir . DIRECTORY_SEPARATOR .'texcollection'.Str::random(10);
         \File::makeDirectory($this->collectionDir, 0755, true, true);
 
         register_shutdown_function(function(){
