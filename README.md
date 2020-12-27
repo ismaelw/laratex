@@ -17,6 +17,17 @@ This package was developed and tested on Unix (FreeBSD) servers and has been tes
 Always make sure to write your paths correctly :)
 This package makes use of the `storage_path()` function. On Windows it is possible that the absolute path will be written out with backslashes.
 
+## Pre-requisites :
+
+You need to have `texlive-full` installed on your server. This program has tex packages and language libraries which help you generate documents.
+Note : You can also choose to install `textlive` which is the lighter version of the package.
+
+The different is :
+    - When you install `textlive` and want to use any additional tex package, you need to install it manually.
+    - `texlive-full` comes with these extra packages. As a result it may take up some additional space on your server (to store the package library files).
+
+If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.  
+
 ## Installation
 
 You can install the package with composer:
