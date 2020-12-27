@@ -22,9 +22,10 @@ This package makes use of the `storage_path()` function. On Windows it is possib
 You need to have `texlive-full` installed on your server. This program has tex packages and language libraries which help you generate documents.
 Note : You can also choose to install `textlive` which is the lighter version of the package.
 
-The different is :
-    - When you install `textlive` and want to use any additional tex package, you need to install it manually.
-    - `texlive-full` comes with these extra packages. As a result it may take up some additional space on your server (to store the package library files).
+The difference is:
+
+* When you install `textlive` and want to use any additional tex package, you need to install it manually.
+* `texlive-full` comes with these extra packages. As a result it may take up some additional space on your server (to store the package library files).
 
 If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.  
 
