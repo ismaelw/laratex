@@ -7,13 +7,15 @@
 
 ## NOTE
 
-This package is currently in development!
-You can use this package already but please allow errors and also please share them with me!
+This package has just been released from development into the wild world of production :)
+You can use this package but please allow errors and also please share them with me!
 I am happy about every issue shared with me as it allows me to make this package better and better.  
 
 ## Important information about your environment
 
-This package was developed and tested on Unix (Linux) servers. On Windows we just tested it partly. So for every error occurring on a Windows system please open an issue and be patient when it comes to my support :) I try my best to help you
+This package was developed and tested on Unix (FreeBSD) servers and has been tested successfully on a Windows machine both running pdflatex.
+Always make sure to write your paths correctly :)
+This package makes use of the `storage_path()` function. On Windows it is possible that the absolute path will be written out with backslashes.
 
 ## Installation
 
@@ -348,10 +350,13 @@ Please feel free to contribute if you want to add new functionalities to this pa
 ## Credits
 
 This Package was inspired alot by the `laravel-php-latex` package created by [Techsemicolon](https://github.com/techsemicolon/laravel-php-latex)
+Later I started my own version of `laravel-php-latex` [ismaelw/laravel-php-latex](https://github.com/ismaelw/laravel-php-latex) because of missing support on the other package.
+
 For better compatibility and better configuration handling I decided to create this package.
+
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+Please see [CHANGELOG](CHANGELOG.md) for more information about any major change.
 
 ## License
 
