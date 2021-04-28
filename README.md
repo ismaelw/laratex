@@ -177,6 +177,10 @@ For more complex LaTeX files where you may need to use blade directives like `{{
 ### Download a PDF file
 
 ```php
+download(string $fileName = null)
+```
+
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -213,6 +217,10 @@ If you named your blade file differently or you have it in another folder make s
 To save a PDF File use the `savePdf` Method.
 
 ```php
+savePdf(string $location)
+```
+
+```php
 (new LaraTeX('latex.tex'))->with([
     'name' => 'John Doe',
     'dob' => '01/01/1994',
@@ -228,6 +236,10 @@ Make sure that the destination folder exists inside of your `storage` folder.
 ### Just get the PDF content
 
 To just get the pdf content as RAW or base64 use the `content` Method.
+
+```php
+content(string $type = 'raw')
+```
 
 The default is `raw`.
 
@@ -252,12 +264,16 @@ or with base64:
         '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
         '7408 South San Juan Ave. Beaver Falls, PA 15010'
     ]
-])->content('base64);
+])->content('base64');
 ```
 
 ### Get the PDF inline
 
 To just get the PDF inline use the `inline` Method.
+
+```php
+inline(string $fileName = null)
+```
 
 ```php
 (new LaraTeX('latex.tex'))->with([
@@ -273,6 +289,10 @@ To just get the PDF inline use the `inline` Method.
 This will return the pdf as an inline document stream shown as `filename.pdf`.
 
 ### Just render the tex data
+
+```php
+render()
+```
 
 ```php
 $tex = new LaraTeX('latex.tex'))->with([
