@@ -190,6 +190,62 @@ class LaraTeX
         ]);
     }
 
+    /**
+     * Get the file as a inline response
+     *
+     * @param  string|null $fileName
+     * @return Illuminate\Http\Response
+     */
+    public function inline($fileName = null)
+    {
+        if(!$this->isRaw){
+            $this->render();
+        }
+
+        $pdfPath = $this->generate();
+        if(!$fileName){
+            $fileName = basename($pdfPath);
+        }
+
+        \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'inline', $this->metadata));
+
+        return \Response::file($pdfPath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$fileName.'"'
+        ]);
+    }
+ 
+    /**
+     * Get the content of the file
+    *
+    * @param  string|null $fileName
+    * @return Illuminate\Http\Response
+    */
+    public function content($type = 'raw')
+    {
+        if ($type == 'raw' || $type == 'base64') {
+            if(!$this->isRaw) {
+                $this->render();
+            }
+    
+            $pdfPath = $this->generate();
+            $fileName = basename($pdfPath);
+
+            \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'content', $this->metadata));
+            
+            if ($type == 'raw') {
+                $pdfContent = file_get_contents($pdfPath);
+            } elseif ($type == 'base64') {
+                $pdfContent = chunk_split(base64_encode(file_get_contents($pdfPath)));
+            }
+            
+            return $pdfContent;
+        } else {
+            \Event::dispatch(new LaratexPdfFailed($fileName, 'content', 'Wrong type set'));
+            return response()->json(['message' => 'Wrong type set. Use raw or base64.'], 400);
+        }
+    }
+
 	/**
      * Generate the PDF
      *

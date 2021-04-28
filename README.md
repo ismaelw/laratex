@@ -1,4 +1,3 @@
-
 # A laravel package to generate pdfs using latex
 
 <p align="center">
@@ -9,13 +8,15 @@
 
 This package has just been released from development into the wild world of production :)
 You can use this package but please allow errors and also please share them with me!
-I am happy about every issue shared with me as it allows me to make this package better and better.  
+I am happy about every issue shared with me as it allows me to make this package better and better.
 
 ## Important information about your environment
 
 This package was developed and tested on Unix (FreeBSD) servers and has been tested successfully on a Windows machine both running pdflatex.
 Always make sure to write your paths correctly :)
+
 This package makes use of the `storage_path()` function. On Windows it is possible that the absolute path will be written out with backslashes.
+Windows is really good with paths using both forward & backslashes but just keep this in mind if something doesn't work that well on windows.
 
 ## Pre-requisites :
 
@@ -24,10 +25,10 @@ Note : You can also choose to install `textlive` which is the lighter version of
 
 The difference is:
 
-* When you install `textlive` and want to use any additional tex package, you need to install it manually.
-* `texlive-full` comes with these extra packages. As a result it may take up some additional space on your server (to store the package library files).
+-   When you install `textlive` and want to use any additional tex package, you need to install it manually.
+-   `texlive-full` comes with these extra packages. As a result it may take up some additional space on your server (to store the package library files).
 
-If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.  
+If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.
 
 ## Installation
 
@@ -44,6 +45,7 @@ To load the config file with php artisan run the following command:
 ```bash
 php artisan vendor:publish --tag=config
 ```
+
 After this please make sure to configure your LaraTeX installation.
 In your LaraTeX Config file `\config\laratex.php` you can configure two settings:
 
@@ -66,9 +68,9 @@ If you have a better working idea please help me and share your knowledge with m
 
 ## Dry Run :
 
-Before diving into the usage directly, it is important that you make sure that the required programs are installed properly on your server. The package comes with a dryrun method. It will automatically generate a file called `dryrun.pdf` if everything is set up properly on the server. If not please double-check the configuration of the `binPath` above.  
+Before diving into the usage directly, it is important that you make sure that the required programs are installed properly on your server. The package comes with a dryrun method. It will automatically generate a file called `dryrun.pdf` if everything is set up properly on the server. If not please double-check the configuration of the `binPath` above.
 
-~~~php
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -87,7 +89,7 @@ class TestController extends Controller
         return (new LaraTeX)->dryRun();
     }
 }
-~~~
+```
 
 Dryrun will download a beautifully clean test pdf if pdflatex is setup properly.
 
@@ -96,11 +98,12 @@ Dryrun will download a beautifully clean test pdf if pdflatex is setup properly.
 With this package you have multiple options. You can render a PDF file and download it directly, save it somewhere, just get the tex content or bulk download a ZIP file containing multiple generated PDF files.
 
 ### Preparing a Laravel View with our LaTeX Content
+
 Create a view file inside `resources/views/latex/tex.blade.php`
 You are of course free to create your view files wherever you want inside of your resources folder.
 Just make sure to define the view to use correctly later.
 
-~~~php
+```php
 \documentclass[a4paper,9pt,landscape]{article}
 
 \usepackage{adjustbox}
@@ -165,13 +168,15 @@ Just make sure to define the view to use correctly later.
 \centering
 
 \end{document}
-~~~
+```
+
 You can see how we have easily used blade directives for `{{ $name }}` to show a name or `@foreach` to show addresses in a table to dynamically generate the content.
 
 For more complex LaTeX files where you may need to use blade directives like `{{ $var }}` inside of a LaTeX command which already uses curly brackets (e.g. `\textbf{}`) you can always use Laravels `@php @endphp` method or plain PHP like `<?php echo $var; ?>` or `<?= $var ?>` (Example: `\textbf{<?= $var ?>}`).
 
 ### Download a PDF file
-~~~php
+
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -198,13 +203,16 @@ class TestController extends Controller
         ])->download('test.pdf');
     }
 }
-~~~
+```
+
 If you named your blade file differently or you have it in another folder make sure to set the blade file correctly:
 `return (new LaraTeX('folder.file'))`
 
 ### Save a PDF file
+
 To save a PDF File use the `savePdf` Method.
-~~~php
+
+```php
 (new LaraTeX('latex.tex'))->with([
     'name' => 'John Doe',
     'dob' => '01/01/1994',
@@ -213,11 +221,60 @@ To save a PDF File use the `savePdf` Method.
         '7408 South San Juan Ave. Beaver Falls, PA 15010'
     ]
 ])->savePdf(storage_path('app/export/test.pdf'));
-~~~
+```
+
 Make sure that the destination folder exists inside of your `storage` folder.
 
+### Just get the PDF content
+
+To just get the pdf content as RAW or base64 use the `content` Method.
+
+The default is `raw`.
+
+```php
+(new LaraTeX('latex.tex'))->with([
+    'name' => 'John Doe',
+    'dob' => '01/01/1994',
+    'addresses' => [
+        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    ]
+])->content();
+```
+
+or with base64:
+
+```php
+(new LaraTeX('latex.tex'))->with([
+    'name' => 'John Doe',
+    'dob' => '01/01/1994',
+    'addresses' => [
+        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    ]
+])->content('base64);
+```
+
+### Get the PDF inline
+
+To just get the PDF inline use the `inline` Method.
+
+```php
+(new LaraTeX('latex.tex'))->with([
+    'name' => 'John Doe',
+    'dob' => '01/01/1994',
+    'addresses' => [
+        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
+        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    ]
+])->inline('filename.pdf');
+```
+
+This will return the pdf as an inline document stream shown as `filename.pdf`.
+
 ### Just render the tex data
-~~~php
+
+```php
 $tex = new LaraTeX('latex.tex'))->with([
     'name' => 'John Doe',
     'dob' => '01/01/1994',
@@ -226,13 +283,13 @@ $tex = new LaraTeX('latex.tex'))->with([
         '7408 South San Juan Ave. Beaver Falls, PA 15010'
     ]
 ])->render();
-~~~
+```
 
 ### Using Raw Tex :
 
 If you do not want to use views as tex files, but already have tex content, or are using other libraries to generate tex content, you can use `RawTex` class instead of passing a view path :
 
-~~~php
+```php
 use Ismaelw\LaraTeX\LaraTeX;
 use Ismaelw\LaraTeX\RawTex;
 
@@ -248,13 +305,13 @@ return (new LaraTeX($tex))->with([
         '7408 South San Juan Ave. Beaver Falls, PA 15010'
     ]
 ])->download('test.pdf');
-~~~
+```
 
-###  Bulk download in a ZIP archive :
+### Bulk download in a ZIP archive :
 
 You want to export multiple PDFs inside of a ZIP-Archive? This package has that functionality ready for you. This gives a great flexibility for you. However, make sure you are not passing too many PDFs together, as it is going to consume a good amount of server memory to export those together.
 
-~~~php
+```php
 $latexCollection = (new LaratexCollection());
 $users = User::limit(10)->get();
 foreach ($users as $user) {
@@ -274,7 +331,7 @@ return $latexCollection->downloadZip('Users.zip');
 
 // OR you can also save it
 $latexCollection->saveZip(storage_path('app/pdf/zips/Users.zip'));
-~~~
+```
 
 ## Listening to events :
 
@@ -284,7 +341,7 @@ These events are important if you need to perform some actions depending on the 
 
 This metadata is then passed back to you from the fired event, which makes it much more meaningful to listen. The metadata can be anything, it can be a string, numeric, an array, an object, a collection and so on. You can pass the metadata depending on your desired logic.
 
-~~~php
+```php
 // $user will be our metadata in this example
 $user = Auth::user();
 
@@ -296,11 +353,11 @@ $user = Auth::user();
         '7408 South San Juan Ave. Beaver Falls, PA 15010'
     ]
 ])->savePdf(storage_path('app/pdf/test.pdf'));
-~~~
+```
 
 Then you can define a listener like :
 
-~~~php
+```php
 <?php
 
 namespace App\Listeners;
@@ -341,7 +398,7 @@ class LaratexPdfWasGeneratedConfirmation
         // Perform desired actions
     }
 }
-~~~
+```
 
 ## Garbage Collection :
 
