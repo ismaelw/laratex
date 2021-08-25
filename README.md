@@ -6,9 +6,8 @@
 
 ## NOTE
 
-This package has just been released from development into the wild world of production :)
-You can use this package but please allow errors and also please share them with me!
-I am happy about every issue shared with me as it allows me to make this package better and better.
+This package was tested in two different environments while using the package for those two special processes.
+If you experience any issues in all the time you are using it please open an issue so I can make this package better with every update :)  
 
 ## Important information about your environment
 
