@@ -53,8 +53,8 @@ In your LaraTeX Config file `\config\laratex.php` you can configure two settings
 If your system doesn't allow to just run the command line command "pdflatex" you may specify the correct one.
 On Unix systems you can find out which bin path to use by running the command `which pdflatex`
 
-If you are running this package with on a windows system please find check this in cmd.exe before.
-There you should find out if running the command `pdflatex` works in cmd.
+If you are running this package with on a windows system please check this in cmd.exe before.
+There you should find out if running the command `pdflatex` works in cmd or if you need to provide the absolute path to your pdflatex application.
 
 **tempPath**
 This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
@@ -173,6 +173,13 @@ Just make sure to define the view to use correctly later.
 You can see how we have easily used blade directives for `{{ $name }}` to show a name or `@foreach` to show addresses in a table to dynamically generate the content.
 
 For more complex LaTeX files where you may need to use blade directives like `{{ $var }}` inside of a LaTeX command which already uses curly brackets (e.g. `\textbf{}`) you can always use Laravels `@php @endphp` method or plain PHP like `<?php echo $var; ?>` or `<?= $var ?>` (Example: `\textbf{<?= $var ?>}`).
+
+**Important note when using html characters**
+
+When using the `{{ }}` statement in a blade template, Laravel's blade engine always sends data through the PHP function `htmlspecialchars()` first. This will convert characters like `&` to `&amp;` and `<` to `&lt;` to just mention a few. pdflatex doesn't like those converted string and will throw an error like `Misplaced alignment tab character &.`.
+
+To fix this issue you have to use the `{!! !!}` statement so that unescaped text is written to your tex template.
+
 
 ### Download a PDF file
 
