@@ -148,9 +148,6 @@ Just make sure to define the view to use correctly later.
                 {{ $key }} & {{ $language }} \\ \hline
              @endforeach
              
-             2 & French \\ \hline
-             3 & Spanish \\ \hline
-             
         \end{tabular}
         \caption{Language Summary}
     \end{table}
