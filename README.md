@@ -104,7 +104,6 @@ Just make sure to define the view to use correctly later.
 
 ```php
 \documentclass[a4paper,9pt,landscape]{article}
-
 \usepackage{adjustbox}
 \usepackage[english]{babel}
 \usepackage[scaled=.92]{helvet}
@@ -122,49 +121,43 @@ Just make sure to define the view to use correctly later.
 \fancyfoot{}
 \fancyfoot[LE,RO]{\thepage}
 
-\fancyfoot[C]{\fontsize{8pt}{8pt}\selectfont Above document is auto-generated.}
+\fancyfoot[C]{\fontsize{8pt}{8pt}\selectfont The above document is auto-generated.}
 \renewcommand{\footrulewidth}{0.2pt}
-
 
 \begin{document}
 
-\section*{\centering{Test Document}}
-
-\begin{center}
-    \item[Name :] {{ $name }}
-    \item[Date of Birth :] {{ $dob }}
-\end{center}
-
-\blindtext
-
-\begin{table}[ht]
-\centering
-\begin{adjustbox}{center}
-\renewcommand{\arraystretch}{2}
-\begin{tabular}{|l|l|}
-
-\hline
-
-\rowcolor[HTML]{E3E3E3}
-\textbf{Sr. No}
-& \textbf{Addresses}\\
-\hline
-
-@foreach($addresses as $key => $address)
-    \renewcommand{\arraystretch}{1.5}
-    {{ $key }} & {{ $address }} \\
-    \hline
-@endforeach
-
-\end{tabular}
-\end{adjustbox}
-\caption{Address Summmary}
-\end{table}
-
-\blindtext
-
-\vfill
-\centering
+    \section*{\centering{LaraTeX Demo Document}}
+    
+    \begin{center}
+        \item[Name :] {{ $Name }}
+        \item[Date of Birth :] {{ $Dob }}
+    \end{center}
+    
+    \blindtext
+    
+    \begin{table}[ht]
+        \centering
+        \renewcommand{\arraystretch}{2}
+        \begin{tabular}{|c|l|} 
+             \hline
+             \rowcolor[HTML]{E3E3E3}
+             \textbf{ID} & \textbf{Language} \\
+             \hline\renewcommand{\arraystretch}{1.5}
+             
+             @foreach($languages as $key => $language)
+                {{ $key }} & {{ $language }} \\ \hline
+             @endforeach
+             
+             2 & French \\ \hline
+             3 & Spanish \\ \hline
+             
+        \end{tabular}
+        \caption{Language Summary}
+    \end{table}
+    
+    \begin{center}
+        {!! $SpecialCharacters !!}
+    \end{center}
 
 \end{document}
 ```
@@ -204,11 +197,13 @@ class TestController extends Controller
     public function download(){
 
         return (new LaraTeX('latex.tex'))->with([
-            'name' => 'John Doe',
-            'dob' => '01/01/1994',
-            'addresses' => [
-                '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-                '7408 South San Juan Ave. Beaver Falls, PA 15010'
+            'Name' => 'John Doe',
+            'Dob' => '01/01/1990',
+            'SpecialCharacters' => '$ (a < b) $',
+            'languages' => [
+                'English, 1',
+                'Spanish, 2',
+                'Italian, 3'
             ]
         ])->download('test.pdf');
     }
@@ -228,11 +223,13 @@ savePdf(string $location)
 
 ```php
 (new LaraTeX('latex.tex'))->with([
-    'name' => 'John Doe',
-    'dob' => '01/01/1994',
-    'addresses' => [
-        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English, 1',
+        'Spanish, 2',
+        'Italian, 3'
     ]
 ])->savePdf(storage_path('app/export/test.pdf'));
 ```
@@ -251,11 +248,13 @@ The default is `raw`.
 
 ```php
 (new LaraTeX('latex.tex'))->with([
-    'name' => 'John Doe',
-    'dob' => '01/01/1994',
-    'addresses' => [
-        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English, 1',
+        'Spanish, 2',
+        'Italian, 3'
     ]
 ])->content();
 ```
@@ -264,11 +263,13 @@ or with base64:
 
 ```php
 (new LaraTeX('latex.tex'))->with([
-    'name' => 'John Doe',
-    'dob' => '01/01/1994',
-    'addresses' => [
-        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English, 1',
+        'Spanish, 2',
+        'Italian, 3'
     ]
 ])->content('base64');
 ```
@@ -283,11 +284,13 @@ inline(string $fileName = null)
 
 ```php
 (new LaraTeX('latex.tex'))->with([
-    'name' => 'John Doe',
-    'dob' => '01/01/1994',
-    'addresses' => [
-        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English, 1',
+        'Spanish, 2',
+        'Italian, 3'
     ]
 ])->inline('filename.pdf');
 ```
@@ -302,11 +305,13 @@ render()
 
 ```php
 $tex = new LaraTeX('latex.tex'))->with([
-    'name' => 'John Doe',
-    'dob' => '01/01/1994',
-    'addresses' => [
-        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English, 1',
+        'Spanish, 2',
+        'Italian, 3'
     ]
 ])->render();
 ```
@@ -324,11 +329,13 @@ use Ismaelw\LaraTeX\RawTex;
 $tex = new RawTex('your_raw_tex_content_string.....');
 
 return (new LaraTeX($tex))->with([
-    'name' => 'John Doe',
-    'dob' => '01/01/1994',
-    'addresses' => [
-        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English, 1',
+        'Spanish, 2',
+        'Italian, 3'
     ]
 ])->download('test.pdf');
 ```
@@ -372,11 +379,13 @@ This metadata is then passed back to you from the fired event, which makes it mu
 $user = Auth::user();
 
 (new LaraTeX('latex.tex', $user))->with([
-    'name' => 'John Doe',
-    'dob' => '01/01/1994',
-    'addresses' => [
-        '20 Pumpkin Hill Drive Satellite Beach, FL 32937',
-        '7408 South San Juan Ave. Beaver Falls, PA 15010'
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English, 1',
+        'Spanish, 2',
+        'Italian, 3'
     ]
 ])->savePdf(storage_path('app/pdf/test.pdf'));
 ```

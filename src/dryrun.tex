@@ -1,5 +1,4 @@
 \documentclass[a4paper,9pt,landscape]{article}
-
 \usepackage{adjustbox}
 \usepackage[english]{babel}
 \usepackage[scaled=.92]{helvet}
@@ -17,50 +16,39 @@
 \fancyfoot{}
 \fancyfoot[LE,RO]{\thepage}
 
-\fancyfoot[C]{\fontsize{8pt}{8pt}\selectfont Above document is auto-generated.}
+\fancyfoot[C]{\fontsize{8pt}{8pt}\selectfont The above document is auto-generated.}
 \renewcommand{\footrulewidth}{0.2pt}
-
 
 \begin{document}
 
-\section*{\centering{Test Document}}
-
-\begin{center}
-    \item[Name :] {{ John Doe }}
-    \item[Date of Birth :] {{ 01/01/1994 }}
-\end{center}
-
-\blindtext
-
-\begin{table}[ht]
-\centering
-\begin{adjustbox}{center}
-\renewcommand{\arraystretch}{2}
-\begin{tabular}{|l|l|}
-
-\hline
-
-\rowcolor[HTML]{E3E3E3}
-\textbf{Sr. No}
-& \textbf{Addresses}\\
-\hline
-
-\renewcommand{\arraystretch}{1.5}
-1 & {{ 20 Pumpkin Hill Drive Satellite Beach, FL 32937 }} \\
-\hline
-
-\renewcommand{\arraystretch}{1.5}
-2 & {{ 7408 South San Juan Ave. Beaver Falls, PA 15010 }} \\
-\hline
-
-\end{tabular}
-\end{adjustbox}
-\caption{Address Summmary}
-\end{table}
-
-\blindtext
-
-\vfill
-\centering
+    \section*{\centering{LaraTeX Demo Document}}
+    
+    \begin{center}
+        \item[Name :] John Doe
+        \item[Date of Birth :] 01.01.1990
+    \end{center}
+    
+    \blindtext
+    
+    \begin{table}[ht]
+        \centering
+        \renewcommand{\arraystretch}{2}
+        \begin{tabular}{|c|l|} 
+             \hline
+             \rowcolor[HTML]{E3E3E3}
+             \textbf{ID} & \textbf{Language} \\
+             \hline\renewcommand{\arraystretch}{1.5}
+             
+             1 & English \\ \hline
+             2 & French \\ \hline
+             3 & Spanish \\ \hline
+             
+        \end{tabular}
+        \caption{Language Summary}
+    \end{table}
+    
+    \begin{center}
+        $ (a < b) $
+    \end{center}
 
 \end{document}
