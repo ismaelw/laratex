@@ -92,6 +92,10 @@ class TestController extends Controller
 
 Dryrun will download a beautifully clean test pdf if pdflatex is setup properly.
 
+<p align="center">
+    <img alt="dryrun.pdf sample" src="dryrun.png" width="450">
+</p>
+
 ## Usage
 
 With this package you have multiple options. You can render a PDF file and download it directly, save it somewhere, just get the tex content or bulk download a ZIP file containing multiple generated PDF files.
@@ -198,9 +202,9 @@ class TestController extends Controller
             'Dob' => '01/01/1990',
             'SpecialCharacters' => '$ (a < b) $',
             'languages' => [
-                'English, 1',
-                'Spanish, 2',
-                'Italian, 3'
+                'English',
+                'Spanish',
+                'Italian'
             ]
         ])->download('test.pdf');
     }
@@ -224,9 +228,9 @@ savePdf(string $location)
     'Dob' => '01/01/1990',
     'SpecialCharacters' => '$ (a < b) $',
     'languages' => [
-        'English, 1',
-        'Spanish, 2',
-        'Italian, 3'
+        'English',
+        'Spanish',
+        'Italian'
     ]
 ])->savePdf(storage_path('app/export/test.pdf'));
 ```
@@ -249,9 +253,9 @@ The default is `raw`.
     'Dob' => '01/01/1990',
     'SpecialCharacters' => '$ (a < b) $',
     'languages' => [
-        'English, 1',
-        'Spanish, 2',
-        'Italian, 3'
+        'English',
+        'Spanish',
+        'Italian'
     ]
 ])->content();
 ```
@@ -264,9 +268,9 @@ or with base64:
     'Dob' => '01/01/1990',
     'SpecialCharacters' => '$ (a < b) $',
     'languages' => [
-        'English, 1',
-        'Spanish, 2',
-        'Italian, 3'
+        'English',
+        'Spanish',
+        'Italian'
     ]
 ])->content('base64');
 ```
@@ -285,9 +289,9 @@ inline(string $fileName = null)
     'Dob' => '01/01/1990',
     'SpecialCharacters' => '$ (a < b) $',
     'languages' => [
-        'English, 1',
-        'Spanish, 2',
-        'Italian, 3'
+        'English',
+        'Spanish',
+        'Italian'
     ]
 ])->inline('filename.pdf');
 ```
@@ -306,9 +310,9 @@ $tex = new LaraTeX('latex.tex'))->with([
     'Dob' => '01/01/1990',
     'SpecialCharacters' => '$ (a < b) $',
     'languages' => [
-        'English, 1',
-        'Spanish, 2',
-        'Italian, 3'
+        'English',
+        'Spanish',
+        'Italian'
     ]
 ])->render();
 ```
@@ -330,9 +334,9 @@ return (new LaraTeX($tex))->with([
     'Dob' => '01/01/1990',
     'SpecialCharacters' => '$ (a < b) $',
     'languages' => [
-        'English, 1',
-        'Spanish, 2',
-        'Italian, 3'
+        'English',
+        'Spanish',
+        'Italian'
     ]
 ])->download('test.pdf');
 ```
@@ -380,9 +384,9 @@ $user = Auth::user();
     'Dob' => '01/01/1990',
     'SpecialCharacters' => '$ (a < b) $',
     'languages' => [
-        'English, 1',
-        'Spanish, 2',
-        'Italian, 3'
+        'English',
+        'Spanish',
+        'Italian'
     ]
 ])->savePdf(storage_path('app/pdf/test.pdf'));
 ```
