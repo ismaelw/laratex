@@ -13,10 +13,10 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class LaraTeX
 {
-	/**
-	 * Stub view file path
-	 * @var string
-	 */
+    /**
+     * Stub view file path
+     * @var string
+     */
     private $stubPath;
 
     /**
@@ -52,36 +52,38 @@ class LaraTeX
      */
     private $nameInsideZip;
 
-	protected $binPath;
-	protected $tempPath;
+    protected $binPath;
+    protected $tempPath;
 
-	/**
+    /**
      * Construct the instance
      *
      * @param string $stubPath
      * @param mixed $metadata
      */
-    public function __construct($stubPath = null, $metadata = null){
-		$this->binPath = config('laratex.binPath');
-		$this->tempPath = config('laratex.tempPath');
-		if($stubPath instanceof RawTex){
+    public function __construct($stubPath = null, $metadata = null)
+    {
+        $this->binPath = config('laratex.binPath');
+        $this->tempPath = config('laratex.tempPath');
+        if ($stubPath instanceof RawTex) {
             $this->isRaw = true;
             $this->renderedTex = $stubPath->getTex();
         } else {
-           $this->stubPath = $stubPath;
+            $this->stubPath = $stubPath;
         }
         $this->metadata = $metadata;
     }
 
-	/**
+    /**
      * Set name inside zip file
      *
      * @param  string $nameInsideZip
      *
      * @return LaraTeX
      */
-    public function setName($nameInsideZip){
-        if(is_string($nameInsideZip)){
+    public function setName($nameInsideZip)
+    {
+        if (is_string($nameInsideZip)) {
             $this->nameInsideZip = basename($nameInsideZip);
         }
         return $this;
@@ -92,7 +94,8 @@ class LaraTeX
      *
      * @return string
      */
-    public function getName(){
+    public function getName()
+    {
         return $this->nameInsideZip;
     }
 
@@ -103,9 +106,10 @@ class LaraTeX
      *
      * @return LaraTeX
      */
-    public function with($data){
-    	$this->data = $data;
-    	return $this;
+    public function with($data)
+    {
+        $this->data = $data;
+        return $this;
     }
 
     /**
@@ -113,7 +117,8 @@ class LaraTeX
      *
      * @return Illuminate\Http\Response
      */
-    public function dryRun(){
+    public function dryRun()
+    {
         $this->isRaw = true;
         $process = new Process(["which", "pdflatex"]);
         $process->run();
@@ -123,31 +128,32 @@ class LaraTeX
         //     throw new LaratexException($process->getOutput());
         // }
 
-        $this->renderedTex = File::get(dirname(__FILE__).'/dryrun.tex');
+        $this->renderedTex = File::get(dirname(__FILE__) . '/dryrun.tex');
         return $this->download('dryrun.pdf');
     }
 
-	/**
+    /**
      * Render the stub with data
      *
      * @return string
      * @throws ViewNotFoundException
      */
-    public function render(){
+    public function render()
+    {
 
-        if($this->renderedTex){
+        if ($this->renderedTex) {
 
-           return $this->renderedTex;
+            return $this->renderedTex;
         }
 
-        if(!view()->exists($this->stubPath)){
+        if (!view()->exists($this->stubPath)) {
 
             throw new ViewNotFoundException('View ' . $this->stubPath . ' not found.');
         }
 
-    	$this->renderedTex = view($this->stubPath, $this->data)->render();
+        $this->renderedTex = view($this->stubPath, $this->data)->render();
 
-    	return $this->renderedTex;
+        return $this->renderedTex;
     }
 
     /**
@@ -174,19 +180,19 @@ class LaraTeX
      */
     public function download($fileName = null)
     {
-        if(!$this->isRaw){
-           $this->render();
+        if (!$this->isRaw) {
+            $this->render();
         }
 
         $pdfPath = $this->generate();
-        if(!$fileName){
+        if (!$fileName) {
             $fileName = basename($pdfPath);
         }
 
         \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'download', $this->metadata));
 
         return \Response::download($pdfPath, $fileName, [
-              'Content-Type' => 'application/pdf',
+            'Content-Type' => 'application/pdf',
         ]);
     }
 
@@ -198,12 +204,12 @@ class LaraTeX
      */
     public function inline($fileName = null)
     {
-        if(!$this->isRaw){
+        if (!$this->isRaw) {
             $this->render();
         }
 
         $pdfPath = $this->generate();
-        if(!$fileName){
+        if (!$fileName) {
             $fileName = basename($pdfPath);
         }
 
@@ -211,34 +217,34 @@ class LaraTeX
 
         return \Response::file($pdfPath, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$fileName.'"'
+            'Content-Disposition' => 'inline; filename="' . $fileName . '"'
         ]);
     }
- 
+
     /**
      * Get the content of the file
-    *
-    * @param  string|null $fileName
-    * @return Illuminate\Http\Response
-    */
+     *
+     * @param  string|null $fileName
+     * @return Illuminate\Http\Response
+     */
     public function content($type = 'raw')
     {
         if ($type == 'raw' || $type == 'base64') {
-            if(!$this->isRaw) {
+            if (!$this->isRaw) {
                 $this->render();
             }
-    
+
             $pdfPath = $this->generate();
             $fileName = basename($pdfPath);
 
             \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'content', $this->metadata));
-            
+
             if ($type == 'raw') {
                 $pdfContent = file_get_contents($pdfPath);
             } elseif ($type == 'base64') {
                 $pdfContent = chunk_split(base64_encode(file_get_contents($pdfPath)));
             }
-            
+
             return $pdfContent;
         } else {
             \Event::dispatch(new LaratexPdfFailed($fileName, 'content', 'Wrong type set'));
@@ -246,85 +252,162 @@ class LaraTeX
         }
     }
 
-	/**
+    /**
      * Generate the PDF
      *
      * @return string
      */
-	 private function generate()
-	 {
-     	 $fileName = Str::random(10);
-         $basetmpfname = tempnam(storage_path($this->tempPath), $fileName);
-         $tmpfname = preg_replace('/\\.[^.\\s]{3,4}$/', '', $basetmpfname);
-         rename($basetmpfname, $tmpfname);
-         $tmpDir = storage_path($this->tempPath);
-         chmod($tmpfname, 0755);
+    private function generate()
+    {
+        $fileName = Str::random(10);
+        $basetmpfname = tempnam(storage_path($this->tempPath), $fileName);
+        $tmpfname = preg_replace('/\\.[^.\\s]{3,4}$/', '', $basetmpfname);
+        rename($basetmpfname, $tmpfname);
+        $tmpDir = storage_path($this->tempPath);
+        chmod($tmpfname, 0755);
 
-         File::put($tmpfname, $this->renderedTex);
+        File::put($tmpfname, $this->renderedTex);
 
-         $program    = $this->binPath ? $this->binPath : 'pdflatex';
-         $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
+        $program    = $this->binPath ? $this->binPath : 'pdflatex';
+        $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
 
-         $process    = new Process($cmd);
-         $process->run();
-         if (!$process->isSuccessful()) {
-             \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
-         	$this->parseError($tmpfname, $process);
-         }
+        $process    = new Process($cmd);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
+            $this->parseError($tmpfname, $process);
+        }
 
-         $this->teardown($tmpfname);
+        $this->teardown($tmpfname);
 
-         register_shutdown_function(function () use ($tmpfname) {
-             if(File::exists($tmpfname . '.pdf')){
-                 File::delete($tmpfname . '.pdf');
-             }
-         });
+        register_shutdown_function(function () use ($tmpfname) {
+            if (File::exists($tmpfname . '.pdf')) {
+                File::delete($tmpfname . '.pdf');
+            }
+        });
 
-         return $tmpfname.'.pdf';
-     }
+        return $tmpfname . '.pdf';
+    }
 
- 	/**
-      * Teardown secondary files
-      *
-      * @param  string $tmpfname
-      *
-      * @return void
-      */
-     private function teardown($tmpfname)
-     {
-         if(File::exists($tmpfname)) {
-             File::delete($tmpfname);
-         }
-         if(File::exists($tmpfname . '.aux')) {
-             File::delete($tmpfname . '.aux');
-         }
-         if(File::exists($tmpfname . '.log')) {
-             File::delete($tmpfname . '.log');
-         }
-         if(File::exists($tmpfname . '.out')) {
-             File::delete($tmpfname . '.out');
-         }
+    /**
+     * Teardown secondary files
+     *
+     * @param  string $tmpfname
+     *
+     * @return void
+     */
+    private function teardown($tmpfname)
+    {
+        if (File::exists($tmpfname)) {
+            File::delete($tmpfname);
+        }
+        if (File::exists($tmpfname . '.aux')) {
+            File::delete($tmpfname . '.aux');
+        }
+        if (File::exists($tmpfname . '.log')) {
+            File::delete($tmpfname . '.log');
+        }
+        if (File::exists($tmpfname . '.out')) {
+            File::delete($tmpfname . '.out');
+        }
 
-         return $this;
-     }
+        return $this;
+    }
 
-	/**
+    /**
      * Throw error from log file
      *
      * @param  string $tmpfname
      *
      * @throws \LaratexException
      */
-    private function parseError($tmpfname, $process){
+    private function parseError($tmpfname, $process)
+    {
 
-    	$logFile = $tmpfname . 'log';
+        $logFile = $tmpfname . 'log';
 
-    	if(!File::exists($logFile)){
-    		throw new LaratexException($process->getOutput());
-    	}
+        if (!File::exists($logFile)) {
+            throw new LaratexException($process->getOutput());
+        }
 
-    	$error = File::get($logFile);
-    	throw new LaratexException($error);
+        $error = File::get($logFile);
+        throw new LaratexException($error);
     }
 
+    /**
+     * Convert HTML String to LaTeX String
+     *
+     * @param string $Input
+     * @param array $override
+     *
+     * @throws \LaratexException
+     */
+    public function convertHtmlToLatex(string $Input, array $Override = NULL)
+    {
+        $ReplaceDictionary = array(
+            array('tag' => 'p', 'extract' => 'value', 'replace' => '$1 \newline '),
+            array('tag' => 'b', 'extract' => 'value', 'replace' => '\textbf{$1}'),
+            array('tag' => 'strong', 'extract' => 'value', 'replace' => '\textbf{$1}'),
+            array('tag' => 'i', 'extract' => 'value', 'replace' => '\textit{$1}'),
+            array('tag' => 'em', 'extract' => 'value', 'replace' => '\textit{$1}'),
+            array('tag' => 'u', 'extract' => 'value', 'replace' => '\underline{$1}'),
+            array('tag' => 'ins', 'extract' => 'value', 'replace' => '\underline{$1}'),
+            array('tag' => 'br', 'extract' => 'value', 'replace' => '\newline '),
+            array('tag' => 'sup', 'extract' => 'value', 'replace' => '\textsuperscript{$1}'),
+            array('tag' => 'sub', 'extract' => 'value', 'replace' => '\textsubscript{$1}'),
+            array('tag' => 'h1', 'extract' => 'value', 'replace' => '\section{$1}'),
+            array('tag' => 'h2', 'extract' => 'value', 'replace' => '\subsection{$1}'),
+            array('tag' => 'h3', 'extract' => 'value', 'replace' => '\subsubsection{$1}'),
+            array('tag' => 'h4', 'extract' => 'value', 'replace' => '\paragraph{$1} \mbox{} \\\\'),
+            array('tag' => 'h5', 'extract' => 'value', 'replace' => '\subparagraph{$1} \mbox{} \\\\'),
+            array('tag' => 'h6', 'extract' => 'value', 'replace' => '\subparagraph{$1} \mbox{} \\\\'),
+            array('tag' => 'li', 'extract' => 'value', 'replace' => '\item $1'),
+            array('tag' => 'ul', 'extract' => 'value', 'replace' => '\begin{itemize}$1\end{itemize}'),
+            array('tag' => 'ol', 'extract' => 'value', 'replace' => '\begin{enumerate}$1\end{enumerate}'),
+            array('tag' => 'img', 'extract' => 'src', 'replace' => '\includegraphics[scale=1]{$1}'),
+        );
+
+        if (isset($Override)) {
+            foreach ($Override as $OverrideArray) {
+                $FindExistingTag = array_search($OverrideArray['tag'], array_column($ReplaceDictionary, 'tag'));
+                if ($FindExistingTag !== false) {
+                    $ReplaceDictionary[$FindExistingTag] = $OverrideArray;
+                } else {
+                    array_push($ReplaceDictionary, $OverrideArray);
+                }
+            }
+        }
+
+        libxml_use_internal_errors(true);
+        $Dom = new \DOMDocument();
+        $Dom->loadHTML($Input);
+
+        $AllTags = $Dom->getElementsByTagName('*');
+        $AllTagsLength = $AllTags->length;
+
+        for ($i = $AllTagsLength - 1; $i > -1; $i--) {
+            $CurrentTag = $AllTags->item($i);
+            $CurrentReplaceItem = array_search($CurrentTag->nodeName, array_column($ReplaceDictionary, 'tag'));
+
+            if ($CurrentReplaceItem !== false) {
+                $CurrentReplace = $ReplaceDictionary[$CurrentReplaceItem];
+
+                switch ($CurrentReplace['extract']) {
+                    case 'value':
+                        $ExtractValue = $CurrentTag->nodeValue;
+                        break;
+                    case 'src':
+                        $ExtractValue = $CurrentTag->getAttribute('src');
+                        break;
+                    default:
+                        $ExtractValue = "";
+                }
+
+                $NewNode = $Dom->createElement('div', str_replace('$1', $ExtractValue, $CurrentReplace['replace']));
+                $CurrentTag->parentNode->replaceChild($NewNode, $CurrentTag);
+            }
+        }
+
+        return strip_tags($Dom->saveHTML());
+    }
 }

@@ -367,6 +367,53 @@ return $latexCollection->downloadZip('Users.zip');
 $latexCollection->saveZip(storage_path('app/pdf/zips/Users.zip'));
 ```
 
+## Convert HTML to LaTeX (BETA)
+
+```php
+convertHtmlToLatex(string $Input, array $Override = NULL)
+```
+
+As I already had a case where the data sent to the latex view was in HTML format I decided to add a parser that converts basic HTML strings to LaTeX.
+Included is a set of HTML Tags and how they should get converted. **Note: At the end of the conversion, all HTML Tags that are not in the default conversion set nor in the override conversion set will be removed with `strip_tags()`.**
+
+If you need the functionality but need a certain HTML Tag converted differently, you can send an override array to the method.
+This override array needs to look like this:
+
+```php
+    $Override = array(
+        array('tag' => 'img', 'extract' => 'src', 'replace' => '\begin{center}\includegraphics[scale=1]{$1}\end{center}'),
+        array('tag' => 'body', 'extract' => 'value', 'replace' => '$1 \newline '),
+    );
+```
+
+Explanation for the array keys:
+
+|Key|Value|
+|-|-|
+|tag|The HTML Tag to look for|
+|extract|Which data to extract from the HTML Dom Node (Possible values: value, src - value would be the innerHTML and src would be the src attribute)|
+|replace|The string with which the HTML Tag wrapping gets replaced. **Note: Always use `$1` as the placeholder for the extracted value**|
+
+The next code snippet shows how the process for the conversion works:
+
+```php
+    $HTMLString = '<h1>Heading 1</h1> <p>Text</p> <h2>Heading 2</h2> <p>Text</p> <h3>Heading 3</h3> <p>Text</p> <p>Normal text here with some <strong>strong</strong> and <strong>bold</strong> text.</p> <p>There is also text that could be <u>underlined</u>.</p> <p>Or of course we could have <em>em-wrapped</em> or <em>i-wrapped</em> text</p> <p>A special test could be a <u><em><strong>bold, underlined and italic</strong></em></u> text at the same time!</p> <p>For the mathematicians we also have calculations x<sup>2</sup> and chemical stuff H<sub>2</sub>O</p> <p>We also have lists that needs to be shown. For example an unordered and an ordered list.</p> <p>If there is alot of text we might also want to use a line break <br> to continue on the next line.</p> <ul> <li>UL Item 1 <ul> <li>UL Item 1.1</li> <li>UL Item 1.2</li> </ul> </li> <li>UL Item 2</li> <li>UL Item 3</li> </ul> <ol> <li>UL Item 1</li> <li>UL Item 2</li> <li>UL Item 3</li> </ol> <p>Last but not least. We have images.</p> <img src="/images/testimages/image1.png" /> <img src="/images/testimages/image2.png" >';
+
+    $Override = array(
+        array('tag' => 'img', 'extract' => 'src', 'replace' => '\begin{center}\includegraphics[scale=1]{$1}\end{center}'),
+        array('tag' => 'body', 'extract' => 'value', 'replace' => '$1 \newline '),
+    );
+
+    $LatexString = (new LaraTeX)->convertHtmlToLatex($HTMLString, $Override);
+
+```
+
+This example would return the following LaTeX String:
+
+```TeX
+\section{Heading 1} Text \newline \subsection{Heading 2} Text \newline \subsubsection{Heading 3} Text \newline Normal text here with some \textbf{strong} and \textbf{bold} text. \newline There is also text that could be \underline{underlined}. \newline Or of course we could have \textit{em-wrapped} or \textit{i-wrapped} text \newline A special test could be a \underline{\textit{\textbf{bold, underlined and italic}}} text at the same time! \newline For the mathematicians we also have calculations x\textsuperscript{2} and chemical stuff H\textsubscript{2}O \newline We also have lists that needs to be shown. For example an unordered and an ordered list. \newline If there is alot of text we might also want to use a line break \newline to continue on the next line. The br tag can have a leading slash too. \newline \begin{itemize} \item UL Item 1 \begin{itemize} \item UL Item 1.1 \item UL Item 1.2 \end{itemize} \item UL Item 2 \item UL Item 3 \end{itemize} \begin{enumerate} \item UL Item 1 \item UL Item 2 \item UL Item 3 \end{enumerate} Last but not least. We have images. \newline \begin{center}\includegraphics[scale=1]{/images/testimages/image1.png}\end{center} \begin{center}\includegraphics[scale=1]{/images/testimages/image2.png}\end{center} \newline
+```
+
 ## Listening to events :
 
 Whenever a pdf is succesfully generated, it fires the event `LaratexPdfWasGenerated`. Similarly whenever the PDF generation fails it fires the event `LaratexPdfFailed`.
