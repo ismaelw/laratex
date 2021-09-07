@@ -1,15 +1,75 @@
-# A laravel package to generate pdfs using latex
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
 
+<br />
 <p align="center">
-    <img alt="Laratex" src="laratex.jpg">
+  <a href="https://github.com/ismaelw/laratex">
+    <img alt="Laratex" src="laratex.png" width="600">
+  </a>
+
+  <h3 align="center">LaraTeX</h3>
+
+  <p align="center">
+    A laravel package to generate PDFs using LaTeX100
+    <br />
+    <br />
+    ·
+    <a href="https://github.com/ismaelw/laratex/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/ismaelw/laratex/issues">Request Feature</a>
+  </p>
 </p>
+
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#note">Note</a>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#configuration">Configuration</a></li>
+      </ul>
+    </li>
+    <li>
+        <a href="#usage">Usage</a>
+        <ul>
+            <li><a href="#dry-run">Dry Run</a></li>
+            <li><a href="#preparing-a-laravel-view-with-latex-content">Preparing a Laravel View with LaTeX Content</a></li>
+            <li><a href="#using-graphics-inside-of-your-latex-files">Using graphics inside of your LaTeX files</a></li>
+            <li><a href="#download-a-pdf-file">Download a PDF File</a></li>
+            <li><a href="#save-a-pdf-file">Save a PDF file</a></li>
+            <li><a href="#return-the-pdf-content">Return the PDF content</a></li>
+            <li><a href="#return-the-pdf-inline">Return the PDF inline</a></li>
+            <li><a href="#return-the-tex-data">Return the TeX data</a></li>
+            <li><a href="#using-raw-tex">Using Raw TeX</a></li>
+            <li><a href="#bulk-download-in-a-zip-archive">Bulk download in a ZIP archive</a></li>
+        </ul>
+    </li>
+    <li><a href="#convert-html-to-latex-beta">Convert HTML to LaTeX BETA</a></li>
+    <li><a href="#garbage-collection">Garbage Collection</a></li>
+    <li><a href="#error-handling">Error Handling</a></li>
+    <li><a href="#contribution">Contribution</a></li>
+    <li><a href="#credits">Credits</a></li>
+    <li><a href="#changelog">Changelog</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
 
 ## NOTE
 
 This package was tested in two different environments while using the package for those two special processes.
 If you experience any issues in all the time you are using it please open an issue so I can make this package better with every update :)  
 
-## Important information about your environment
+## Getting Started
+
+### Important information about your environment
 
 This package was developed and tested on Unix (FreeBSD) servers and has been tested successfully on a Windows machine both running pdflatex.
 Always make sure to write your paths correctly :)
@@ -17,7 +77,7 @@ Always make sure to write your paths correctly :)
 This package makes use of the `storage_path()` function. On Windows it is possible that the absolute path will be written out with backslashes.
 Windows is really good with paths using both forward & backslashes but just keep this in mind if something doesn't work that well on windows.
 
-## Pre-requisites :
+### Prerequisites :
 
 You need to have `texlive-full` installed on your server. This program has tex packages and language libraries which help you generate documents.
 Note : You can also choose to install `textlive` which is the lighter version of the package.
@@ -29,7 +89,7 @@ The difference is:
 
 If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.
 
-## Installation
+### Installation
 
 You can install the package with composer:
 
@@ -37,7 +97,7 @@ You can install the package with composer:
 composer require ismaelw/laratex
 ```
 
-## Configuration
+### Configuration
 
 To load the config file with php artisan run the following command:
 
@@ -59,13 +119,9 @@ There you should find out if running the command `pdflatex` works in cmd or if y
 This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
 It is important that you always **start your path without a slash** and **end your path with a slash** (e.g. app/pdf/)
 
-## Using graphics inside of your LaTeX files
+## Usage
 
-Where exactly pdflatex looks for graphics included inside of a .tex file I am not really sure.
-What helped me the most was to always give the absolute path to a graphic like `\includegraphics[scale=0.06]{/absolute/path/to/www/storage/graphics/file.pdf}` for example.
-If you have a better working idea please help me and share your knowledge with me :)
-
-## Dry Run :
+### Dry Run
 
 Before diving into the usage directly, it is important that you make sure that the required programs are installed properly on your server. The package comes with a dryrun method. It will automatically generate a file called `dryrun.pdf` if everything is set up properly on the server. If not please double-check the configuration of the `binPath` above.
 
@@ -96,11 +152,9 @@ Dryrun will download a beautifully clean test pdf if pdflatex is setup properly.
     <img alt="dryrun.pdf sample" src="dryrun.png" width="450">
 </p>
 
-## Usage
-
 With this package you have multiple options. You can render a PDF file and download it directly, save it somewhere, just get the tex content or bulk download a ZIP file containing multiple generated PDF files.
 
-### Preparing a Laravel View with our LaTeX Content
+### Preparing a Laravel View with LaTeX Content
 
 Create a view file inside `resources/views/latex/tex.blade.php`
 You are of course free to create your view files wherever you want inside of your resources folder.
@@ -173,6 +227,11 @@ When using the `{{ }}` statement in a blade template, Laravel's blade engine alw
 
 To fix this issue you have to use the `{!! !!}` statement so that unescaped text is written to your tex template.
 
+### Using graphics inside of your LaTeX files
+
+Where exactly pdflatex looks for graphics included inside of a .tex file I am not really sure.
+What helped me the most was to always give the absolute path to a graphic like `\includegraphics[scale=0.06]{/absolute/path/to/www/storage/graphics/file.pdf}` for example.
+If you have a better working idea please help me and share your knowledge with me :)
 
 ### Download a PDF file
 
@@ -237,7 +296,7 @@ savePdf(string $location)
 
 Make sure that the destination folder exists inside of your `storage` folder.
 
-### Just get the PDF content
+### Return the PDF content
 
 To just get the pdf content as RAW or base64 use the `content` Method.
 
@@ -275,7 +334,7 @@ or with base64:
 ])->content('base64');
 ```
 
-### Get the PDF inline
+### Return the PDF inline
 
 To just get the PDF inline use the `inline` Method.
 
@@ -298,7 +357,7 @@ inline(string $fileName = null)
 
 This will return the pdf as an inline document stream shown as `filename.pdf`.
 
-### Just render the tex data
+### Return the TeX data
 
 ```php
 render()
@@ -317,7 +376,7 @@ $tex = new LaraTeX('latex.tex'))->with([
 ])->render();
 ```
 
-### Using Raw Tex :
+### Using Raw TeX
 
 If you do not want to use views as tex files, but already have tex content, or are using other libraries to generate tex content, you can use `RawTex` class instead of passing a view path :
 
@@ -341,7 +400,7 @@ return (new LaraTeX($tex))->with([
 ])->download('test.pdf');
 ```
 
-### Bulk download in a ZIP archive :
+### Bulk download in a ZIP archive
 
 You want to export multiple PDFs inside of a ZIP-Archive? This package has that functionality ready for you. This gives a great flexibility for you. However, make sure you are not passing too many PDFs together, as it is going to consume a good amount of server memory to export those together.
 
@@ -367,7 +426,7 @@ return $latexCollection->downloadZip('Users.zip');
 $latexCollection->saveZip(storage_path('app/pdf/zips/Users.zip'));
 ```
 
-## Convert HTML to LaTeX (BETA)
+## Convert HTML to LaTeX BETA
 
 ```php
 convertHtmlToLatex(string $Input, array $Override = NULL)
@@ -513,3 +572,14 @@ Please see [CHANGELOG](CHANGELOG.md) for more information about any major change
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+[contributors-shield]: https://img.shields.io/github/contributors/ismaelw/laratex.svg?style=for-the-badge
+[contributors-url]: https://github.com/ismaelw/laratex/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/ismaelw/laratex.svg?style=for-the-badge
+[forks-url]: https://github.com/ismaelw/laratex/network/members
+[stars-shield]: https://img.shields.io/github/stars/ismaelw/laratex.svg?style=for-the-badge
+[stars-url]: https://github.com/ismaelw/laratex/stargazers
+[issues-shield]: https://img.shields.io/github/issues/ismaelw/laratex.svg?style=for-the-badge
+[issues-url]: https://github.com/ismaelw/laratex/issues
+[license-shield]: https://img.shields.io/github/license/ismaelw/laratex.svg?style=for-the-badge
+[license-url]: https://github.com/ismaelw/laratex/blob/master/LICENSE.md
