@@ -13,7 +13,7 @@
   <h3 align="center">LaraTeX</h3>
 
   <p align="center">
-    A laravel package to generate PDFs using LaTeX100
+    A laravel package to generate PDFs using LaTeX
     <br />
     <br />
     ·
