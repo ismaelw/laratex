@@ -335,15 +335,44 @@ class LaraTeX
     }
 
     /**
+     * Encodes speical characters inside of a HTML String
+     *
+     * @param $HTMLString
+     * @param $ENT
+     * 
+     */
+    private function htmlEntitiesFix($HTMLString, $ENT)
+    {
+        $Matches = array();
+        $Separator = '###UNIQUEHTMLTAG###';
+
+        preg_match_all(":</{0,1}[a-z]+[^>]*>:i", $HTMLString, $Matches);
+
+        $Temp = preg_replace(":</{0,1}[a-z]+[^>]*>:i", $Separator, $HTMLString);
+        $Temp = explode($Separator, $Temp);
+
+        for ($i = 0; $i < count($Temp); $i++)
+            $Temp[$i] = htmlentities($Temp[$i], $ENT, 'UTF-8', false);
+
+        $Temp = join($Separator, $Temp);
+
+        for ($i = 0; $i < count($Matches[0]); $i++)
+            $Temp = preg_replace(":$Separator:", $Matches[0][$i], $Temp, 1);
+
+        return $Temp;
+    }
+
+    /**
      * Convert HTML String to LaTeX String
      *
      * @param string $Input
      * @param array $override
-     *
-     * @throws \LaratexException
+     * 
      */
     public function convertHtmlToLatex(string $Input, array $Override = NULL)
     {
+        $Input = $this->htmlEntitiesFix($Input, ENT_QUOTES | ENT_HTML401);
+
         $ReplaceDictionary = array(
             array('tag' => 'p', 'extract' => 'value', 'replace' => '$1 \newline '),
             array('tag' => 'b', 'extract' => 'value', 'replace' => '\textbf{$1}'),
@@ -408,6 +437,6 @@ class LaraTeX
             }
         }
 
-        return strip_tags($Dom->saveHTML());
+        return html_entity_decode(strip_tags($Dom->saveHTML()));
     }
 }
