@@ -21,6 +21,9 @@
     ·
     <a href="https://github.com/ismaelw/laratex/issues">Request Feature</a>
   </p>
+  <p align="center">
+    For better visualization you can find a small <strong>Demo</strong> and the <strong>HTML to LaTeX converter</strong> <a href="https://laratest.wismann.ch">here</a>.
+  </p>
 </p>
 
 <details open="open">
@@ -217,7 +220,7 @@ Just make sure to define the view to use correctly later.
 \end{document}
 ```
 
-You can see how we have easily used blade directives for `{{ $name }}` to show a name or `@foreach` to show addresses in a table to dynamically generate the content.
+You can see how we have easily used blade directives for `{{ $name }}` to show a name or `@foreach` to show languages in a table to dynamically generate the content.
 
 For more complex LaTeX files where you may need to use blade directives like `{{ $var }}` inside of a LaTeX command which already uses curly brackets (e.g. `\textbf{}`) you can always use Laravels `@php @endphp` method or plain PHP like `<?php echo $var; ?>` or `<?= $var ?>` (Example: `\textbf{<?= $var ?>}`).
 
