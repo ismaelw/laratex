@@ -4,6 +4,8 @@ namespace Websta\LaraTeX;
 
 class LaratexPdfWasGenerated
 {
+    use \Illuminate\Foundation\Events\Dispatchable;
+
     /**
      * Path of pdf
      *

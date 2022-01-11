@@ -15,9 +15,10 @@ class LaraTeX
 {
     /**
      * Stub view file path
-     * @var string
+     *
+     * @var string|null
      */
-    private string $stubPath;
+    private ?string $stubPath;
 
     /**
      * Data to pass to the stub
@@ -120,9 +121,10 @@ class LaraTeX
     /**
      * Dry run
      *
-     * @return Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Websta\LaraTeX\ViewNotFoundException
      */
-    public function dryRun(): Illuminate\Http\Response
+    public function dryRun():  \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $this->isRaw = true;
         $process = new Process(["which", "pdflatex"]);
@@ -181,10 +183,10 @@ class LaraTeX
      * Download file as a response
      *
      * @param string|null $fileName
-     * @return Illuminate\Http\Response
-     * @throws ViewNotFoundException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Websta\LaraTeX\ViewNotFoundException
      */
-    public function download(string $fileName = null): Illuminate\Http\Response
+    public function download(string $fileName = null):  \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         if (!$this->isRaw) {
             $this->render();
@@ -206,10 +208,10 @@ class LaraTeX
      * Get the file as a inline response
      *
      * @param string|null $fileName
-     * @return Illuminate\Http\Response
-     * @throws ViewNotFoundException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Websta\LaraTeX\ViewNotFoundException
      */
-    public function inline(string $fileName = null): Illuminate\Http\Response
+    public function inline(string $fileName = null):  \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         if (!$this->isRaw) {
             $this->render();
@@ -266,6 +268,7 @@ class LaraTeX
      * Generate the PDF
      *
      * @return string
+     * @throws \Websta\LaraTeX\LaratexException
      */
     private function generate(): string
     {
