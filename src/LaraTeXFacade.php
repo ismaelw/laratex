@@ -1,12 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Ismaelw\LaraTeX;
+namespace Websta\LaraTeX;
 
 use Illuminate\Support\Facades\Facade;
 
-/**
- * @see \Ismaelw\LaraTeX\Skeleton\SkeletonClass
- */
 class LaraTeXFacade extends Facade
 {
     /**
@@ -14,7 +11,7 @@ class LaraTeXFacade extends Facade
      *
      * @return string
      */
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return 'laratex';
     }

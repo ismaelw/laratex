@@ -1,28 +1,33 @@
 {
-    "name": "ismaelw/laratex",
+    "name": "webstasolutions/laratex",
     "description": "A package for creating PDFs in Laravel using LaTeX",
     "keywords": [
-        "ismaelw",
         "laratex"
     ],
-    "homepage": "https://github.com/ismaelw/laratex",
+    "homepage": "https://github.com/webstasolutions/laratex",
     "license": "MIT",
     "authors": [
         {
             "name": "Ismael Wismann",
             "email": "wismann.ismael@gmail.com",
             "role": "Developer"
+        },
+        {
+            "name": "Jan Bláha",
+            "email": "jan.blaha@websta.de",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.0",
         "illuminate/support": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0",
         "illuminate/filesystem": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0",
-        "symfony/process": "^2.0|^3.0|^4.0|^5.0"
+        "symfony/process": "^2.0|^3.0|^4.0|^5.0",
+        "ext-zip": "*"
     },
     "autoload": {
         "psr-4": {
-            "Ismaelw\\LaraTeX\\": "src"
+            "Websta\\LaraTeX\\": "src"
         }
     },
     "config": {
@@ -32,16 +37,16 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Ismaelw\\LaraTeX\\LaraTeXServiceProvider"
+                "Websta\\LaraTeX\\LaraTeXServiceProvider"
             ],
             "aliases": {
-                "LaraTeX": "Ismaelw\\LaraTeX\\LaraTeXFacade"
+                "LaraTeX": "Websta\\LaraTeX\\LaraTeXFacade"
             }
         }
     },
     "scripts": {
         "post-autoload-dump": [
-            "@php artisan vendor:publish --provider='Ismaelw\\LaraTeX\\LaraTeXServiceProvider' --tag=public --force"
+            "@php artisan vendor:publish --provider='Websta\\LaraTeX\\LaraTeXServiceProvider' --tag=public --force"
         ]
     }
 }

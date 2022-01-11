@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Ismaelw\LaraTeX;
+namespace Websta\LaraTeX;
 
 class LaratexPdfWasGenerated
 {
@@ -9,30 +9,30 @@ class LaratexPdfWasGenerated
      *
      * @var string
      */
-    public $pdf;
+    public string $pdf;
 
     /**
      * Type of action download|savepdf
      * @var string
      */
-    public $action;
+    public string $action;
 
     /**
      * Metadata of the generated pdf
      * @var mixed
      */
-    public $metadata;
+    public mixed $metadata;
 
     /**
      * Create a new event instance.
      *
      * @param string $pdf
      * @param string $action
-     * @param mixed $metadata
+     * @param mixed|null $metadata
      *
      * @return void
      */
-    public function __construct($pdf, $action = 'download', $metadata = null)
+    public function __construct(string $pdf, string $action = 'download', mixed $metadata = null)
     {
         $this->pdf      = $pdf;
         $this->action   = $action;
@@ -44,7 +44,7 @@ class LaratexPdfWasGenerated
      *
      * @return array
      */
-    public function broadcastOn()
+    public function broadcastOn(): array
     {
         return [];
     }

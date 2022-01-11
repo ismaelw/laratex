@@ -6,7 +6,7 @@
 
 <br />
 <p align="center">
-  <a href="https://github.com/ismaelw/laratex">
+  <a href="https://github.com/webstasolutions/laratex">
     <img alt="Laratex" src="laratex.png" width="600">
   </a>
 
@@ -17,9 +17,9 @@
     <br />
     <br />
     ·
-    <a href="https://github.com/ismaelw/laratex/issues">Report Bug</a>
+    <a href="https://github.com/webstasolutions/laratex/issues">Report Bug</a>
     ·
-    <a href="https://github.com/ismaelw/laratex/issues">Request Feature</a>
+    <a href="https://github.com/webstasolutions/laratex/issues">Request Feature</a>
   </p>
   <p align="center">
     For better visualization you can find a small <strong>Demo</strong> and the <strong>HTML to LaTeX converter</strong> <a href="https://laratest.wismann.ch">here</a>.
@@ -97,7 +97,7 @@ If you are choosing a hosting provider that doesn't allow you to install applica
 You can install the package with composer:
 
 ```bash
-composer require ismaelw/laratex
+composer require webstasolutions/laratex
 ```
 
 ### Configuration
@@ -134,7 +134,7 @@ Before diving into the usage directly, it is important that you make sure that t
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Ismaelw\LaraTeX\LaraTeX;
+use webstasolutions\LaraTeX\LaraTeX;
 
 class TestController extends Controller
 {
@@ -248,7 +248,7 @@ download(string $fileName = null)
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Ismaelw\LaraTeX\LaraTeX;
+use webstasolutions\LaraTeX\LaraTeX;
 
 class TestController extends Controller
 {
@@ -384,8 +384,8 @@ $tex = new LaraTeX('latex.tex'))->with([
 If you do not want to use views as tex files, but already have tex content, or are using other libraries to generate tex content, you can use `RawTex` class instead of passing a view path :
 
 ```php
-use Ismaelw\LaraTeX\LaraTeX;
-use Ismaelw\LaraTeX\RawTex;
+use webstasolutions\LaraTeX\LaraTeX;
+use webstasolutions\LaraTeX\RawTex;
 
 ...
 
@@ -507,7 +507,7 @@ Then you can define a listener like :
 
 namespace App\Listeners;
 
-use Ismaelw\LaraTeX\LaratexPdfWasGenerated;
+use webstasolutions\LaraTeX\LaratexPdfWasGenerated;
 
 class LaratexPdfWasGeneratedConfirmation
 {
@@ -564,7 +564,7 @@ Please feel free to contribute if you want to add new functionalities to this pa
 ## Credits
 
 This Package was inspired alot by the `laravel-php-latex` package created by [Techsemicolon](https://github.com/techsemicolon/laravel-php-latex)
-Later I started my own version of `laravel-php-latex` [ismaelw/laravel-php-latex](https://github.com/ismaelw/laravel-php-latex) because of missing support on the other package.
+Later I started my own version of `laravel-php-latex` [webstasolutions/laravel-php-latex](https://github.com/webstasolutions/laravel-php-latex) because of missing support on the other package.
 
 For better compatibility and better configuration handling I decided to create this package.
 
@@ -576,13 +576,13 @@ Please see [CHANGELOG](CHANGELOG.md) for more information about any major change
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[contributors-shield]: https://img.shields.io/github/contributors/ismaelw/laratex.svg?style=for-the-badge
-[contributors-url]: https://github.com/ismaelw/laratex/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/ismaelw/laratex.svg?style=for-the-badge
-[forks-url]: https://github.com/ismaelw/laratex/network/members
-[stars-shield]: https://img.shields.io/github/stars/ismaelw/laratex.svg?style=for-the-badge
-[stars-url]: https://github.com/ismaelw/laratex/stargazers
-[issues-shield]: https://img.shields.io/github/issues/ismaelw/laratex.svg?style=for-the-badge
-[issues-url]: https://github.com/ismaelw/laratex/issues
-[license-shield]: https://img.shields.io/github/license/ismaelw/laratex.svg?style=for-the-badge
-[license-url]: https://github.com/ismaelw/laratex/blob/master/LICENSE.md
+[contributors-shield]: https://img.shields.io/github/contributors/webstasolutions/laratex.svg?style=for-the-badge
+[contributors-url]: https://github.com/webstasolutions/laratex/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/webstasolutions/laratex.svg?style=for-the-badge
+[forks-url]: https://github.com/webstasolutions/laratex/network/members
+[stars-shield]: https://img.shields.io/github/stars/webstasolutions/laratex.svg?style=for-the-badge
+[stars-url]: https://github.com/webstasolutions/laratex/stargazers
+[issues-shield]: https://img.shields.io/github/issues/webstasolutions/laratex.svg?style=for-the-badge
+[issues-url]: https://github.com/webstasolutions/laratex/issues
+[license-shield]: https://img.shields.io/github/license/webstasolutions/laratex.svg?style=for-the-badge
+[license-url]: https://github.com/webstasolutions/laratex/blob/master/LICENSE.md

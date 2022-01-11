@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Ismaelw\LaraTeX;
+namespace Websta\LaraTeX;
 
-use Ismaelw\LaraTeX\LaratexException;
-use Ismaelw\LaraTeX\LaratexPdfWasGenerated;
-use Ismaelw\LaraTeX\LaratexPdfFailed;
-use Ismaelw\LaraTeX\ViewNotFoundException;
+use Websta\LaraTeX\LaratexException;
+use Websta\LaraTeX\LaratexPdfWasGenerated;
+use Websta\LaraTeX\LaratexPdfFailed;
+use Websta\LaraTeX\ViewNotFoundException;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -17,51 +17,58 @@ class LaraTeX
      * Stub view file path
      * @var string
      */
-    private $stubPath;
+    private string $stubPath;
 
     /**
      * Data to pass to the stub
      *
      * @var array
      */
-    private $data;
+    private array $data;
 
     /**
      * Rendered tex file
      *
      * @var string
      */
-    private $renderedTex;
+    private string $renderedTex;
 
     /**
      * If it's a raw tex or a view file
      * @var boolean
      */
-    private $isRaw = false;
+    private bool $isRaw = false;
 
     /**
      * Metadata of the generated pdf
      * @var mixed
      */
-    private $metadata;
+    private mixed $metadata;
 
     /**
      * File Name inside Zip
      *
      * @var string
      */
-    private $nameInsideZip;
+    private string $nameInsideZip;
 
-    protected $binPath;
-    protected $tempPath;
+    /**
+     * @var string
+     */
+    protected string $binPath;
+
+    /**
+     * @var string
+     */
+    protected string $tempPath;
 
     /**
      * Construct the instance
      *
-     * @param string $stubPath
-     * @param mixed $metadata
+     * @param string|null $stubPath
+     * @param mixed|null $metadata
      */
-    public function __construct($stubPath = null, $metadata = null)
+    public function __construct(string $stubPath = null, mixed $metadata = null)
     {
         $this->binPath = config('laratex.binPath');
         $this->tempPath = config('laratex.tempPath');
@@ -77,15 +84,13 @@ class LaraTeX
     /**
      * Set name inside zip file
      *
-     * @param  string $nameInsideZip
+     * @param string $nameInsideZip
      *
      * @return LaraTeX
      */
-    public function setName($nameInsideZip)
+    public function setName(string $nameInsideZip): LaraTeX
     {
-        if (is_string($nameInsideZip)) {
-            $this->nameInsideZip = basename($nameInsideZip);
-        }
+        $this->nameInsideZip = basename($nameInsideZip);
         return $this;
     }
 
@@ -94,7 +99,7 @@ class LaraTeX
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->nameInsideZip;
     }
@@ -102,11 +107,11 @@ class LaraTeX
     /**
      * Set the with data
      *
-     * @param  array $data
+     * @param array $data
      *
      * @return LaraTeX
      */
-    public function with($data)
+    public function with(array $data): LaraTeX
     {
         $this->data = $data;
         return $this;
@@ -117,7 +122,7 @@ class LaraTeX
      *
      * @return Illuminate\Http\Response
      */
-    public function dryRun()
+    public function dryRun(): Illuminate\Http\Response
     {
         $this->isRaw = true;
         $process = new Process(["which", "pdflatex"]);
@@ -138,16 +143,13 @@ class LaraTeX
      * @return string
      * @throws ViewNotFoundException
      */
-    public function render()
+    public function render(): string
     {
-
         if ($this->renderedTex) {
-
             return $this->renderedTex;
         }
 
         if (!view()->exists($this->stubPath)) {
-
             throw new ViewNotFoundException('View ' . $this->stubPath . ' not found.');
         }
 
@@ -159,26 +161,30 @@ class LaraTeX
     /**
      * Save generated PDF
      *
-     * @param  string $location
+     * @param string $location
      *
      * @return boolean
+     * @throws ViewNotFoundException
      */
-    public function savePdf($location)
+    public function savePdf(string $location): bool
     {
         $this->render();
         $pdfPath = $this->generate();
         $fileMoved = File::move($pdfPath, $location);
-        \Event::dispatch(new LaratexPdfWasGenerated($location, 'savepdf', $this->metadata));
+
+        LaratexPdfWasGenerated::dispatch($location, 'savepdf', $this->metadata);
+
         return $fileMoved;
     }
 
     /**
      * Download file as a response
      *
-     * @param  string|null $fileName
+     * @param string|null $fileName
      * @return Illuminate\Http\Response
+     * @throws ViewNotFoundException
      */
-    public function download($fileName = null)
+    public function download(string $fileName = null): Illuminate\Http\Response
     {
         if (!$this->isRaw) {
             $this->render();
@@ -189,7 +195,7 @@ class LaraTeX
             $fileName = basename($pdfPath);
         }
 
-        \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'download', $this->metadata));
+        LaratexPdfWasGenerated::dispatch($fileName, 'download', $this->metadata);
 
         return \Response::download($pdfPath, $fileName, [
             'Content-Type' => 'application/pdf',
@@ -199,10 +205,11 @@ class LaraTeX
     /**
      * Get the file as a inline response
      *
-     * @param  string|null $fileName
+     * @param string|null $fileName
      * @return Illuminate\Http\Response
+     * @throws ViewNotFoundException
      */
-    public function inline($fileName = null)
+    public function inline(string $fileName = null): Illuminate\Http\Response
     {
         if (!$this->isRaw) {
             $this->render();
@@ -213,7 +220,7 @@ class LaraTeX
             $fileName = basename($pdfPath);
         }
 
-        \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'inline', $this->metadata));
+        LaratexPdfWasGenerated::dispatch($fileName, 'inline', $this->metadata);
 
         return \Response::file($pdfPath, [
             'Content-Type' => 'application/pdf',
@@ -224,11 +231,13 @@ class LaraTeX
     /**
      * Get the content of the file
      *
-     * @param  string|null $fileName
-     * @return Illuminate\Http\Response
+     * @param string $type
+     * @return false|Illuminate\Http\Response|string
+     * @throws ViewNotFoundException
      */
-    public function content($type = 'raw')
+    public function content(string $type = 'raw'): bool|string|Illuminate\Http\Response
     {
+        $fileName = '';
         if ($type == 'raw' || $type == 'base64') {
             if (!$this->isRaw) {
                 $this->render();
@@ -237,8 +246,9 @@ class LaraTeX
             $pdfPath = $this->generate();
             $fileName = basename($pdfPath);
 
-            \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'content', $this->metadata));
+            LaratexPdfWasGenerated::dispatch($fileName, 'content', $this->metadata);
 
+            $pdfContent = null;
             if ($type == 'raw') {
                 $pdfContent = file_get_contents($pdfPath);
             } elseif ($type == 'base64') {
@@ -247,7 +257,7 @@ class LaraTeX
 
             return $pdfContent;
         } else {
-            \Event::dispatch(new LaratexPdfFailed($fileName, 'content', 'Wrong type set'));
+            LaratexPdfFailed::dispatch($fileName, 'content', 'Wrong type set');
             return response()->json(['message' => 'Wrong type set. Use raw or base64.'], 400);
         }
     }
@@ -257,7 +267,7 @@ class LaraTeX
      *
      * @return string
      */
-    private function generate()
+    private function generate(): string
     {
         $fileName = Str::random(10);
         $basetmpfname = tempnam(storage_path($this->tempPath), $fileName);
@@ -274,7 +284,7 @@ class LaraTeX
         $process    = new Process($cmd);
         $process->run();
         if (!$process->isSuccessful()) {
-            \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
+            LaratexPdfFailed::dispatch($fileName, 'download', $this->metadata);
             $this->parseError($tmpfname, $process);
         }
 
@@ -292,11 +302,11 @@ class LaraTeX
     /**
      * Teardown secondary files
      *
-     * @param  string $tmpfname
+     * @param string $tmpfname
      *
      * @return void
      */
-    private function teardown($tmpfname)
+    private function teardown(string $tmpfname): void
     {
         if (File::exists($tmpfname)) {
             File::delete($tmpfname);
@@ -311,17 +321,16 @@ class LaraTeX
             File::delete($tmpfname . '.out');
         }
 
-        return $this;
     }
 
     /**
      * Throw error from log file
      *
-     * @param  string $tmpfname
-     *
-     * @throws \LaratexException
+     * @param string $tmpfname
+     * @param $process
+     * @throws LaratexException
      */
-    private function parseError($tmpfname, $process)
+    private function parseError(string $tmpfname, $process): void
     {
 
         $logFile = $tmpfname . 'log';
@@ -337,11 +346,11 @@ class LaraTeX
     /**
      * Encodes speical characters inside of a HTML String
      *
-     * @param $HTMLString
-     * @param $ENT
-     * 
+     * @param string $HTMLString
+     * @param int $ENT
+     * @return array|string|null
      */
-    private function htmlEntitiesFix($HTMLString, $ENT)
+    private function htmlEntitiesFix(string $HTMLString, int $ENT): array|string|null
     {
         $Matches = array();
         $Separator = '###UNIQUEHTMLTAG###';
@@ -366,10 +375,10 @@ class LaraTeX
      * Convert HTML String to LaTeX String
      *
      * @param string $Input
-     * @param array $override
-     * 
+     * @param array|null $Override
+     * @return string
      */
-    public function convertHtmlToLatex(string $Input, array $Override = NULL)
+    public function convertHtmlToLatex(string $Input, array $Override = NULL): string
     {
         $Input = $this->htmlEntitiesFix($Input, ENT_QUOTES | ENT_HTML401);
 

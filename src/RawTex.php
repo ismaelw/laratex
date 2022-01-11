@@ -1,23 +1,25 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Ismaelw\LaraTeX;
+namespace Websta\LaraTeX;
 
 class RawTex
 {
-	/**
+    /**
      * Content of tex file
+     *
      * @var string
      */
-    private $tex;
+    private string $tex;
 
     /**
      * Construct the instance
      *
      * @param string $tex
      */
-    public function __construct($tex){
+    public function __construct(string $tex)
+    {
 
-    	$this->tex = $tex;
+        $this->tex = $tex;
     }
 
     /**
@@ -25,8 +27,8 @@ class RawTex
      *
      * @return string
      */
-    public function getTex(){
-
-    	return $this->tex;
+    public function getTex(): string
+    {
+        return $this->tex;
     }
 }

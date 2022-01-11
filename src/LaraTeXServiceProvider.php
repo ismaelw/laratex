@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Ismaelw\LaraTeX;
+namespace Websta\LaraTeX;
 
 use Illuminate\Support\ServiceProvider;
 

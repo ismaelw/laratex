@@ -1,12 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Ismaelw\LaraTeX;
+namespace Websta\LaraTeX;
 
-use Ismaelw\LaraTeX\LaraTeX;
-use Ismaelw\LaraTeX\LaratexEmptyCollectionException;
-use Ismaelw\LaraTeX\LaratexException;
-use Ismaelw\LaraTeX\LaratexZipFailedException;
+use Websta\LaraTeX\LaraTeX;
+use Websta\LaraTeX\LaratexException;
 use Illuminate\Support\Str;
+use Websta\LaraTeX\LaratexEmptyCollectionException;
+use Websta\LaraTeX\LaratexZipFailedException;
 
 class LaratexCollection
 {
@@ -15,29 +15,30 @@ class LaratexCollection
      *
      * @var array
      */
-    private $collection = [];
+    private array $collection = [];
 
     /**
      * PDF collection
      *
      * @var array
      */
-    private $pdfCollection = [];
+    private array $pdfCollection = [];
 
     /**
      * Temp directory of collection files
      *
      * @var string
      */
-    private $collectionDir;
+    private string $collectionDir;
 
     /**
      * Add latex instance to collection
-     * @param  LaraTeX $latex
      *
-     * @return void
+     * @param LaraTeX $latex
+     *
+     * @return LaratexCollection
      */
-    public function add(LaraTeX $latex)
+    public function add(LaraTeX $latex): static
     {
         $this->collection[] = $latex;
 
@@ -47,11 +48,13 @@ class LaratexCollection
     /**
      * Download zip of generated pdfs
      *
-     * @param  string $fileName
+     * @param string $fileName
      *
      * @return Illuminate\Http\Response
+     * @throws LaratexEmptyCollectionException
+     * @throws LaratexZipFailedException
      */
-    public function downloadZip($fileName)
+    public function downloadZip(string $fileName): Illuminate\Http\Response
     {
         $this->generate();
 
@@ -65,29 +68,30 @@ class LaratexCollection
     /**
      * Save generated zip
      *
-     * @param  string $location
+     * @param string $location
      *
      * @return boolean
+     * @throws LaratexEmptyCollectionException
+     * @throws LaratexZipFailedException
      */
-    public function saveZip($location)
+    public function saveZip(string $location): bool
     {
         $this->generate();
 
         $zipFile = $this->makeArchive(basename($location));
 
-        $fileMoved = \File::move($zipFile, $location);
-
-        return $fileMoved;
+        return \File::move($zipFile, $location);
     }
 
     /**
      * Make zip archive
      *
-     * @param  string $fileName
+     * @param string $fileName
      *
      * @return string
+     * @throws LaratexZipFailedException
      */
-    private function makeArchive($fileName)
+    private function makeArchive(string $fileName): string
     {
         $zip = new \ZipArchive;
 
@@ -96,19 +100,18 @@ class LaratexCollection
         touch($zipFile);
         chmod($zipFile, 0755);
 
-        if($zip->open($zipFile, \ZipArchive::OVERWRITE) === TRUE) {
+        if ($zip->open($zipFile, \ZipArchive::OVERWRITE) === true) {
 
             foreach ($this->pdfCollection as $pdf) {
 
-                if(\File::exists($pdf)){
+                if (\File::exists($pdf)) {
 
                     $zip->addFile($pdf, basename($pdf));
                 }
             }
 
             $zip->close();
-        }
-        else{
+        } else {
             throw new LaratexZipFailedException('Could not generate zip file.');
         }
 
@@ -118,13 +121,12 @@ class LaratexCollection
     /**
      * PPdf generation
      *
-     * @return void
+     * @return LaratexCollection
      * @throws LaratexEmptyCollectionException
      */
-    private function generate(){
-
-        if(count($this->collection) == 0){
-
+    private function generate(): LaratexCollection
+    {
+        if (count($this->collection) == 0) {
             throw new LaratexEmptyCollectionException('No latex documents added in latex collection. Nothing to generate.');
         }
 
@@ -136,9 +138,10 @@ class LaratexCollection
     /**
      * Move generated files to collection temp dir
      *
-     * @return void
+     * @return LaratexCollection
      */
-    private function moveToCollectionDir(){
+    private function moveToCollectionDir(): LaratexCollection
+    {
 
         $this->makeCollectionDir();
 
@@ -157,16 +160,17 @@ class LaratexCollection
     /**
      * Make temp collection dir
      *
-     * @return void
+     * @return LaratexCollection
      */
-    private function makeCollectionDir(){
+    private function makeCollectionDir(): LaratexCollection
+    {
         $tmpDir = sys_get_temp_dir();
 
-        $this->collectionDir = $tmpDir . DIRECTORY_SEPARATOR .'texcollection'.Str::random(10);
+        $this->collectionDir = $tmpDir . DIRECTORY_SEPARATOR . 'texcollection' . Str::random(10);
         \File::makeDirectory($this->collectionDir, 0755, true, true);
 
-        register_shutdown_function(function(){
-            if(\File::exists($this->collectionDir)){
+        register_shutdown_function(function () {
+            if (\File::exists($this->collectionDir)) {
                 \File::deleteDirectory($this->collectionDir);
             }
         });
