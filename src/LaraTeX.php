@@ -147,7 +147,7 @@ class LaraTeX
      */
     public function render(): string
     {
-        if ($this->renderedTex) {
+        if (!empty($this->renderedTex)) {
             return $this->renderedTex;
         }
 

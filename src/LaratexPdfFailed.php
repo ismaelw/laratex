@@ -4,6 +4,8 @@ namespace Websta\LaraTeX;
 
 class LaratexPdfFailed
 {
+    use \Illuminate\Foundation\Events\Dispatchable;
+    
     /**
      * Path of pdf
      *
