@@ -16,9 +16,9 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "illuminate/support": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0",
-        "illuminate/filesystem": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0",
-        "symfony/process": "^2.0|^3.0|^4.0|^5.0"
+        "illuminate/support": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0|^9.0",
+        "illuminate/filesystem": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0|^9.0",
+        "symfony/process": "^2.0|^3.0|^4.0|^5.0|^6.0"
     },
     "autoload": {
         "psr-4": {
