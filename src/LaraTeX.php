@@ -65,6 +65,7 @@ class LaraTeX
     private $nameInsideZip;
 
     protected $binPath;
+    protected $bibTextPath;
     protected $tempPath;
 
     /**
@@ -76,6 +77,7 @@ class LaraTeX
     public function __construct($stubPath = null, $metadata = null)
     {
         $this->binPath = config('laratex.binPath');
+        $this->bibTextPath = config('laratex.bibTexPath');
         $this->tempPath = config('laratex.tempPath');
         if ($stubPath instanceof RawTex) {
             $this->isRaw = true;
@@ -304,7 +306,7 @@ class LaraTeX
         }
 
         if ($this->generateBibtex) {
-            $bibtex = new Process(['/Library/TeX/texbin/bibtex', basename($tmpfname)], $tmpDir);
+            $bibtex = new Process([$this->bibTexPath, basename($tmpfname)], $tmpDir);
             $bibtex->run();
 
             $reProcess = new Process($cmd);
