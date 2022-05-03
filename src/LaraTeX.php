@@ -65,7 +65,7 @@ class LaraTeX
     private $nameInsideZip;
 
     protected $binPath;
-    protected $bibTextPath;
+    protected $bibTexPath;
     protected $tempPath;
 
     /**
@@ -77,7 +77,7 @@ class LaraTeX
     public function __construct($stubPath = null, $metadata = null)
     {
         $this->binPath = config('laratex.binPath');
-        $this->bibTextPath = config('laratex.bibTexPath');
+        $this->bibTexPath = config('laratex.bibTexPath');
         $this->tempPath = config('laratex.tempPath');
         if ($stubPath instanceof RawTex) {
             $this->isRaw = true;
