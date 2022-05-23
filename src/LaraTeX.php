@@ -273,6 +273,7 @@ class LaraTeX
 
         $process    = new Process($cmd);
         $process->run();
+        $process->run();
         if (!$process->isSuccessful()) {
             \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
             $this->parseError($tmpfname, $process);
