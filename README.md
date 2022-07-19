@@ -403,6 +403,25 @@ return (new LaraTeX($tex))->with([
 ])->download('test.pdf');
 ```
 
+### Compile multiple times
+
+There are a few cases in which it is necessary to compile twice. If you are using a table of contents (TOC) for example, or if you use the package `lastpage` to get a better pagination (`Page n of n`) as another example.
+
+LaraTeX compiles once as a default. If you need to compile twice (or - for whatever reason more than twice) you can use the method `compileAmount()` to achieve this.
+
+```php
+return (new LaraTeX('latex.tex'))->with([
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English',
+        'Spanish',
+        'Italian'
+    ]
+])->compileAmount(2)->download('test.pdf');
+```
+
 ### Bulk download in a ZIP archive
 
 You want to export multiple PDFs inside of a ZIP-Archive? This package has that functionality ready for you. This gives a great flexibility for you. However, make sure you are not passing too many PDFs together, as it is going to consume a good amount of server memory to export those together.
@@ -529,9 +548,9 @@ class LaratexPdfWasGeneratedConfirmation
      */
     public function handle(LaratexPdfWasGenerated$event)
     {
-        // Path  of pdf in case in was saved
+        // Path of PDF in case it was saved
         // OR
-        // Downloaded name of pdf file in case it was downloaded in response directly
+        // Downloaded name of PDF file in case it was downloaded in response directly
         $pdf = $event->pdf;
 
         // download OR savepdf

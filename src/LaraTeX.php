@@ -52,6 +52,13 @@ class LaraTeX
      */
     private $nameInsideZip;
 
+    /**
+     * Number of times to compile the TeX file. (for TOC generation for example)
+     *
+     * @var integer
+     */
+    private $compileAmount = 1;
+
     protected $binPath;
     protected $tempPath;
 
@@ -75,6 +82,22 @@ class LaraTeX
     }
 
     /**
+     * Set the number of times to compile
+     *
+     * @param  integer $compileAmount
+     *
+     * @return LaraTeX
+     */
+    public function compileAmount($compileAmount){
+
+        if(is_integer($compileAmount)){
+            $this->compileAmount = $compileAmount;
+        }
+
+        return $this;
+    }
+
+    /**
      * Set name inside zip file
      *
      * @param  string $nameInsideZip
@@ -86,6 +109,7 @@ class LaraTeX
         if (is_string($nameInsideZip)) {
             $this->nameInsideZip = basename($nameInsideZip);
         }
+
         return $this;
     }
 
@@ -120,14 +144,6 @@ class LaraTeX
     public function dryRun()
     {
         $this->isRaw = true;
-        $process = new Process(["which", "pdflatex"]);
-        $process->run();
-
-        // if (!$process->isSuccessful()) {
-        //
-        //     throw new LaratexException($process->getOutput());
-        // }
-
         $this->renderedTex = File::get(dirname(__FILE__) . '/dryrun.tex');
         return $this->download('dryrun.pdf');
     }
@@ -140,14 +156,11 @@ class LaraTeX
      */
     public function render()
     {
-
         if ($this->renderedTex) {
-
             return $this->renderedTex;
         }
 
         if (!view()->exists($this->stubPath)) {
-
             throw new ViewNotFoundException('View ' . $this->stubPath . ' not found.');
         }
 
@@ -271,11 +284,13 @@ class LaraTeX
         $program    = $this->binPath ? $this->binPath : 'pdflatex';
         $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
 
-        $process    = new Process($cmd);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
-            $this->parseError($tmpfname, $process);
+        for ($i = 1; $i <= $this->compileAmount; $i++) { 
+            $process = new Process($cmd);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
+                $this->parseError($tmpfname, $process);
+            }
         }
 
         $this->teardown($tmpfname);
@@ -301,14 +316,13 @@ class LaraTeX
         if (File::exists($tmpfname)) {
             File::delete($tmpfname);
         }
-        if (File::exists($tmpfname . '.aux')) {
-            File::delete($tmpfname . '.aux');
-        }
-        if (File::exists($tmpfname . '.log')) {
-            File::delete($tmpfname . '.log');
-        }
-        if (File::exists($tmpfname . '.out')) {
-            File::delete($tmpfname . '.out');
+
+        $extensions = ['aux', 'log', 'out'];
+
+        foreach ($extensions as $extension) {
+            if (File::exists($tmpfname . '.' . $extension)) {
+                File::delete($tmpfname . '.' . $extension);
+            }
         }
 
         return $this;
@@ -323,7 +337,6 @@ class LaraTeX
      */
     private function parseError($tmpfname, $process)
     {
-
         $logFile = $tmpfname . 'log';
 
         if (!File::exists($logFile)) {
