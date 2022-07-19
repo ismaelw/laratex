@@ -30,9 +30,6 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#note">Note</a>
-    </li>
-    <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
@@ -52,6 +49,7 @@
             <li><a href="#return-the-pdf-inline">Return the PDF inline</a></li>
             <li><a href="#return-the-tex-data">Return the TeX data</a></li>
             <li><a href="#using-raw-tex">Using Raw TeX</a></li>
+            <li><a href="#compile-multiple-times">Compile multiple times</a></li>
             <li><a href="#bulk-download-in-a-zip-archive">Bulk download in a ZIP archive</a></li>
         </ul>
     </li>
@@ -64,11 +62,6 @@
     <li><a href="#license">License</a></li>
   </ol>
 </details>
-
-## NOTE
-
-This package was tested in two different environments while using the package for those two special processes.
-If you experience any issues in all the time you are using it please open an issue so I can make this package better with every update :)  
 
 ## Getting Started
 
@@ -83,14 +76,14 @@ Windows is really good with paths using both forward & backslashes but just keep
 ### Prerequisites
 
 You need to have `texlive-full` installed on your server. This program has tex packages and language libraries which help you generate documents.
-Note : You can also choose to install `textlive` which is the lighter version of the package.
+Note: You can also choose to install `textlive` which is the lighter version of the package.
 
 The difference is:
 
 -   When you install `textlive` and want to use any additional tex package, you need to install it manually.
 -   `texlive-full` comes with these extra packages. As a result it may take up some additional space on your server (to store the package library files).
 
-If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.
+If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex, xelatex or lualatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.
 
 ### Installation
 
