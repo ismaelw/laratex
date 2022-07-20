@@ -61,6 +61,7 @@ class LaraTeX
 
     protected $binPath;
     protected $tempPath;
+    protected $doTeardown = true;
 
     /**
      * Construct the instance
@@ -72,6 +73,7 @@ class LaraTeX
     {
         $this->binPath = config('laratex.binPath');
         $this->tempPath = config('laratex.tempPath');
+        $this->doTeardown = config('laratex.teardown');
         if ($stubPath instanceof RawTex) {
             $this->isRaw = true;
             $this->renderedTex = $stubPath->getTex();
@@ -293,7 +295,9 @@ class LaraTeX
             }
         }
 
-        $this->teardown($tmpfname);
+        if ($this->doTeardown) {
+            $this->teardown($tmpfname);
+        }
 
         register_shutdown_function(function () use ($tmpfname) {
             if (File::exists($tmpfname . '.pdf')) {

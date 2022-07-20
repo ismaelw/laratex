@@ -115,6 +115,10 @@ There you should find out if running the command `pdflatex` works in cmd or if y
 This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
 It is important that you always **start your path without a slash** and **end your path with a slash** (e.g. app/pdf/)
 
+**teardown**
+As seen in the section Garbage Collection this package deletes all temp files (log, aux etc.) created while generating the PDF file. When debugging successfully generated PDF files it can be useful to check the generated tex file.
+Set this setting to `false` if you don't want LaraTeX to delete those files after generating the PDF.
+
 ## Usage
 
 ### Dry Run
