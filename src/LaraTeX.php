@@ -260,6 +260,8 @@ class LaraTeX
                 $this->render();
             }
 
+            $this->renderedTex = htmlspecialchars_decode($this->renderedTex);
+
             $pdfPath = $this->generate();
             $fileName = basename($pdfPath);
 
