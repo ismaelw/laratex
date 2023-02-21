@@ -59,7 +59,14 @@ class LaraTeX
      */
     private $compileAmount = 1;
 
+    /**
+     * Should we run BibTeX before generating?
+     */
+    public bool $generateBibtex = false;
+
+
     protected $binPath;
+    protected $bibTexPath;
     protected $tempPath;
     protected $doTeardown = true;
 
@@ -73,6 +80,7 @@ class LaraTeX
     {
         $this->binPath = config('laratex.binPath');
         $this->tempPath = config('laratex.tempPath');
+        $this->bibTexPath = config('laratex.bibTexPath');
         $this->doTeardown = config('laratex.teardown');
         if ($stubPath instanceof RawTex) {
             $this->isRaw = true;
@@ -96,6 +104,12 @@ class LaraTeX
             $this->compileAmount = $compileAmount;
         }
 
+        return $this;
+    }
+
+    public function renderBibtex()
+    {
+        $this->generateBibtex = true;
         return $this;
     }
 
@@ -286,6 +300,11 @@ class LaraTeX
         $program    = $this->binPath ? $this->binPath : 'pdflatex';
         $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
 
+        if ($this->generateBibtex) {
+            $bibtex = new Process([$this->bibTexPath, basename($tmpfname)], $tmpDir);
+            $bibtex->run();
+        }
+
         for ($i = 1; $i <= $this->compileAmount; $i++) { 
             $process = new Process($cmd);
             $process->run();
@@ -321,7 +340,7 @@ class LaraTeX
             File::delete($tmpfname);
         }
 
-        $extensions = ['aux', 'log', 'out'];
+        $extensions = ['aux', 'log', 'out', 'bbl', 'blg', 'toc'];
 
         foreach ($extensions as $extension) {
             if (File::exists($tmpfname . '.' . $extension)) {
