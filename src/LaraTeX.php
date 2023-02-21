@@ -300,12 +300,14 @@ class LaraTeX
         $program    = $this->binPath ? $this->binPath : 'pdflatex';
         $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
 
-        if ($this->generateBibtex) {
-            $bibtex = new Process([$this->bibTexPath, basename($tmpfname)], $tmpDir);
-            $bibtex->run();
-        }
+        for ($i = 1; $i <= $this->compileAmount; $i++) {
 
-        for ($i = 1; $i <= $this->compileAmount; $i++) { 
+            // BibTeX must be run after the first generation of the LaTeX file.
+            if ($i > 1 && $this->generateBibtex) {
+                $bibtex = new Process([$this->bibTexPath, basename($tmpfname)], $tmpDir);
+                $bibtex->run();
+            }
+
             $process = new Process($cmd);
             $process->run();
             if (!$process->isSuccessful()) {
