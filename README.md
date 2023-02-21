@@ -30,9 +30,6 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#note">Note</a>
-    </li>
-    <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
@@ -52,6 +49,7 @@
             <li><a href="#return-the-pdf-inline">Return the PDF inline</a></li>
             <li><a href="#return-the-tex-data">Return the TeX data</a></li>
             <li><a href="#using-raw-tex">Using Raw TeX</a></li>
+            <li><a href="#compile-multiple-times">Compile multiple times</a></li>
             <li><a href="#bulk-download-in-a-zip-archive">Bulk download in a ZIP archive</a></li>
         </ul>
     </li>
@@ -64,11 +62,6 @@
     <li><a href="#license">License</a></li>
   </ol>
 </details>
-
-## NOTE
-
-This package was tested in two different environments while using the package for those two special processes.
-If you experience any issues in all the time you are using it please open an issue so I can make this package better with every update :)  
 
 ## Getting Started
 
@@ -83,14 +76,14 @@ Windows is really good with paths using both forward & backslashes but just keep
 ### Prerequisites
 
 You need to have `texlive-full` installed on your server. This program has tex packages and language libraries which help you generate documents.
-Note : You can also choose to install `textlive` which is the lighter version of the package.
+Note: You can also choose to install `textlive` which is the lighter version of the package.
 
 The difference is:
 
 -   When you install `textlive` and want to use any additional tex package, you need to install it manually.
 -   `texlive-full` comes with these extra packages. As a result it may take up some additional space on your server (to store the package library files).
 
-If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.
+If you are choosing a hosting provider that doesn't allow you to install applications yourself please make sure that pdflatex, xelatex or lualatex is installed or ask if it can get installed. Also make sure that you have SSH access to the server as you might need it to find out in which path your pdflatex installation is sitting.
 
 ### Installation
 
@@ -121,6 +114,10 @@ There you should find out if running the command `pdflatex` works in cmd or if y
 **tempPath**
 This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
 It is important that you always **start your path without a slash** and **end your path with a slash** (e.g. app/pdf/)
+
+**teardown**
+As seen in the section Garbage Collection this package deletes all temp files (log, aux etc.) created while generating the PDF file. When debugging successfully generated PDF files it can be useful to check the generated tex file.
+Set this setting to `false` if you don't want LaraTeX to delete those files after generating the PDF.
 
 ## Usage
 
@@ -403,6 +400,25 @@ return (new LaraTeX($tex))->with([
 ])->download('test.pdf');
 ```
 
+### Compile multiple times
+
+There are a few cases in which it is necessary to compile twice. If you are using a table of contents (TOC) for example, or if you use the package `lastpage` to get a better pagination (`Page n of n`) as another example.
+
+LaraTeX compiles once as a default. If you need to compile twice (or - for whatever reason more than twice) you can use the method `compileAmount()` to achieve this.
+
+```php
+return (new LaraTeX('latex.tex'))->with([
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English',
+        'Spanish',
+        'Italian'
+    ]
+])->compileAmount(2)->download('test.pdf');
+```
+
 ### Bulk download in a ZIP archive
 
 You want to export multiple PDFs inside of a ZIP-Archive? This package has that functionality ready for you. This gives a great flexibility for you. However, make sure you are not passing too many PDFs together, as it is going to consume a good amount of server memory to export those together.
@@ -529,9 +545,9 @@ class LaratexPdfWasGeneratedConfirmation
      */
     public function handle(LaratexPdfWasGenerated$event)
     {
-        // Path  of pdf in case in was saved
+        // Path of PDF in case it was saved
         // OR
-        // Downloaded name of pdf file in case it was downloaded in response directly
+        // Downloaded name of PDF file in case it was downloaded in response directly
         $pdf = $event->pdf;
 
         // download OR savepdf

@@ -6,4 +6,7 @@ return [
 
 	// Folder in your storage folder where you would like to store the temp files created by LaraTeX
 	'tempPath' => 'app/',
+
+	// boolean to define if log, aux and tex files should be deleted after generating PDF
+	'teardown' => true,
 ];
