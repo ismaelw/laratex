@@ -50,6 +50,7 @@
             <li><a href="#return-the-tex-data">Return the TeX data</a></li>
             <li><a href="#using-raw-tex">Using Raw TeX</a></li>
             <li><a href="#compile-multiple-times">Compile multiple times</a></li>
+            <li><a href="#compile-using-bibtexs">Compile using bibtex</a></li>
             <li><a href="#bulk-download-in-a-zip-archive">Bulk download in a ZIP archive</a></li>
         </ul>
     </li>
@@ -110,6 +111,15 @@ On Unix systems you can find out which bin path to use by running the command `w
 
 If you are running this package with on a windows system please check this in cmd.exe before.
 There you should find out if running the command `pdflatex` works in cmd or if you need to provide the absolute path to your pdflatex application.
+If you cannot just run pdflatex you might have to add the path to your pdflatex compiler in your PATH system environment variables.
+
+**bibTexPath**
+If your system doesn't allow to just run the command line command "bibtex" you may specify the correct one.
+On Unix systems you can find out which bin path to use by running the command `which bibtex`
+
+If you are running this package with on a windows system please check this in cmd.exe before.
+There you should find out if running the command `bibtex` works in cmd or if you need to provide the absolute path to your bibtex application.
+If you cannot just run bibtex you might have to add the path to your bibtex compiler in your PATH system environment variables.
 
 **tempPath**
 This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
@@ -417,6 +427,23 @@ return (new LaraTeX('latex.tex'))->with([
         'Italian'
     ]
 ])->compileAmount(2)->download('test.pdf');
+```
+
+### Compile using bibtex
+
+If you want to use `bibtex`, please make sure that you have the `bibTexPath` property set correctly inside your `laratex.php` config file. 
+
+```php
+return (new LaraTeX('latex.tex'))->with([
+    'Name' => 'John Doe',
+    'Dob' => '01/01/1990',
+    'SpecialCharacters' => '$ (a < b) $',
+    'languages' => [
+        'English',
+        'Spanish',
+        'Italian'
+    ]
+])->renderBibtex()->compileAmount(3)->download('test.pdf');
 ```
 
 ### Bulk download in a ZIP archive
