@@ -50,7 +50,7 @@
             <li><a href="#return-the-tex-data">Return the TeX data</a></li>
             <li><a href="#using-raw-tex">Using Raw TeX</a></li>
             <li><a href="#compile-multiple-times">Compile multiple times</a></li>
-            <li><a href="#compile-using-bibtexs">Compile using bibtex</a></li>
+            <li><a href="#compile-using-bibtex">Compile using bibtex</a></li>
             <li><a href="#bulk-download-in-a-zip-archive">Bulk download in a ZIP archive</a></li>
         </ul>
     </li>
