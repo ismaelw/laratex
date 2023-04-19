@@ -365,7 +365,7 @@ class LaraTeX
         $logFile = $tmpfname . 'log';
 
         if (!File::exists($logFile)) {
-            throw new LaratexException($process->getOutput());
+            throw new LaratexException($process->getErrorOutput() . ' - ' . $process->getOutput());
         }
 
         $error = File::get($logFile);
