@@ -42,6 +42,7 @@
         <ul>
             <li><a href="#dry-run">Dry Run</a></li>
             <li><a href="#preparing-a-laravel-view-with-latex-content">Preparing a Laravel View with LaTeX Content</a></li>
+            <li><a href="#using-the-blade-directive">Using the blade directive</a></li>
             <li><a href="#using-graphics-inside-of-your-latex-files">Using graphics inside of your LaTeX files</a></li>
             <li><a href="#download-a-pdf-file">Download a PDF File</a></li>
             <li><a href="#save-a-pdf-file">Save a PDF file</a></li>
@@ -231,11 +232,76 @@ You can see how we have easily used blade directives for `{{ $name }}` to show a
 
 For more complex LaTeX files where you may need to use blade directives like `{{ $var }}` inside of a LaTeX command which already uses curly brackets (e.g. `\textbf{}`) you can always use Laravels `@php @endphp` method or plain PHP like `<?php echo $var; ?>` or `<?= $var ?>` (Example: `\textbf{<?= $var ?>}`).
 
+As an addition there is also a `@latex()` Blade directive mentioned in the next chapter.
+
 **Important note when using html characters**
 
 When using the `{{ }}` statement in a blade template, Laravel's blade engine always sends data through the PHP function `htmlspecialchars()` first. This will convert characters like `&` to `&amp;` and `<` to `&lt;` to just mention a few. pdflatex doesn't like those converted string and will throw an error like `Misplaced alignment tab character &.`.
 
 To fix this issue you have to use the `{!! !!}` statement so that unescaped text is written to your tex template.
+
+### Using the Blade directive
+
+Since LaTeX has its own syntax it is not advised to use the standard blade syntax `{{ $variable }}` or `{!! $variable !!}`. Instead you can use `@latex($variable)` in your blade templates instead, which handles the suitable escaping of reserved LaTeX characters.
+
+Create a view file inside `resources/views/latex/tex.blade.php`
+You are of course free to create your view files wherever you want inside of your resources folder.
+Just make sure to define the view to use correctly later.
+
+```php
+\documentclass[a4paper,9pt,landscape]{article}
+\usepackage{adjustbox}
+\usepackage[english]{babel}
+\usepackage[scaled=.92]{helvet}
+\usepackage{fancyhdr}
+\usepackage[svgnames,table]{xcolor}
+\usepackage[a4paper,inner=1.5cm,outer=1.5cm,top=1cm,bottom=1cm,bindingoffset=0cm]{geometry}
+\usepackage{blindtext}
+\geometry{textwidth=\paperwidth, textheight=\paperheight, noheadfoot, nomarginpar}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\pagestyle{fancy}
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+
+\fancyfoot[C]{\fontsize{8pt}{8pt}\selectfont The above document is auto-generated.}
+\renewcommand{\footrulewidth}{0.2pt}
+
+\begin{document}
+
+    \section*{\centering{LaraTeX Demo Document}}
+    
+    \begin{center}
+        \item[Name :] @latex($Name)
+        \item[Date of Birth :] @latex($Dob)
+    \end{center}
+    
+    \blindtext
+    
+    \begin{table}[ht]
+        \centering
+        \renewcommand{\arraystretch}{2}
+        \begin{tabular}{|c|l|} 
+             \hline
+             \rowcolor[HTML]{E3E3E3}
+             \textbf{ID} & \textbf{Language} \\
+             \hline\renewcommand{\arraystretch}{1.5}
+             
+             @foreach($languages as $key => $language)
+                @latex($key) & @latex($language) \\ \hline
+             @endforeach
+             
+        \end{tabular}
+        \caption{Language Summary}
+    \end{table}
+
+\end{document}
+```
+
+You can see how we have easily used the `@latex()` Blade directive to print variables.
 
 ### Using graphics inside of your LaTeX files
 
@@ -610,6 +676,8 @@ This Package was inspired alot by the `laravel-php-latex` package created by [Te
 Later I started my own version of `laravel-php-latex` [ismaelw/laravel-php-latex](https://github.com/ismaelw/laravel-php-latex) because of missing support on the other package.
 
 For better compatibility and better configuration handling I decided to create this package.
+
+Thanks to the contribution of [@koona-labs](https://github.com/koona-labs) you can now use Blade directives.
 
 ## Changelog
 
