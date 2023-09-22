@@ -3,6 +3,7 @@
 namespace Ismaelw\LaraTeX;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
 
 class LaraTeXServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,11 @@ class LaraTeXServiceProvider extends ServiceProvider
                 __DIR__.'/../config/config.php' => config_path('laratex.php'),
             ], 'config');
         }
+
+        Blade::directive('latex', function ($exp) {
+            $path = LatexEscaper::class;
+            return "<?php echo $path::escape($exp) ?>";
+        });
     }
 
     /**
