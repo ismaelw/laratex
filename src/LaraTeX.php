@@ -371,9 +371,9 @@ class LaraTeX
         }
 
         if (File::exists($texFileNoExtension)) {
-            $texFileContent = File::get($texFile);
+            $texFileContent = File::get($texFileNoExtension);
         } elseif (File::exists($texFileExtension)) {
-            $texFileContent = File::get($texFile);
+            $texFileContent = File::get($texFileExtension);
         } else {
             $texFileContent = 'Tex file not found';
         }
