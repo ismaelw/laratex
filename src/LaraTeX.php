@@ -342,7 +342,7 @@ class LaraTeX
             File::delete($tmpfname);
         }
 
-        $extensions = ['aux', 'log', 'out', 'bbl', 'blg', 'toc'];
+        $extensions = ['aux', 'log', 'out', 'bbl', 'blg', 'toc', 'tex'];
 
         foreach ($extensions as $extension) {
             if (File::exists($tmpfname . '.' . $extension)) {
@@ -362,14 +362,25 @@ class LaraTeX
      */
     private function parseError($tmpfname, $process)
     {
-        $logFile = $tmpfname . 'log';
+        $logFile = $tmpfname . '.log';
+        $texFileNoExtension = $tmpfname;
+        $texFileExtension = $tmpfname . '.tex';
 
         if (!File::exists($logFile)) {
             throw new LaratexException($process->getErrorOutput() . ' - ' . $process->getOutput());
         }
 
+        if (File::exists($texFileNoExtension)) {
+            $texFileContent = File::get($texFile);
+        } elseif (File::exists($texFileExtension)) {
+            $texFileContent = File::get($texFile);
+        } else {
+            $texFileContent = 'Tex file not found';
+        }
+
         $error = File::get($logFile);
-        throw new LaratexException($error);
+        
+        throw LaratexException::detailed($error, $texFileContent);
     }
 
     /**
