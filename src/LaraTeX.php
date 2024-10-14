@@ -9,6 +9,8 @@ use Ismaelw\LaraTeX\ViewNotFoundException;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Http\Response;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class LaraTeX
@@ -197,7 +199,7 @@ class LaraTeX
         $this->render();
         $pdfPath = $this->generate();
         $fileMoved = File::move($pdfPath, $location);
-        \Event::dispatch(new LaratexPdfWasGenerated($location, 'savepdf', $this->metadata));
+        Event::dispatch(new LaratexPdfWasGenerated($location, 'savepdf', $this->metadata));
         return $fileMoved;
     }
 
@@ -218,9 +220,9 @@ class LaraTeX
             $fileName = basename($pdfPath);
         }
 
-        \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'download', $this->metadata));
+        Event::dispatch(new LaratexPdfWasGenerated($fileName, 'download', $this->metadata));
 
-        return \Response::download($pdfPath, $fileName, [
+        return Response::download($pdfPath, $fileName, [
             'Content-Type' => 'application/pdf',
         ]);
     }
@@ -242,9 +244,9 @@ class LaraTeX
             $fileName = basename($pdfPath);
         }
 
-        \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'inline', $this->metadata));
+        Event::dispatch(new LaratexPdfWasGenerated($fileName, 'inline', $this->metadata));
 
-        return \Response::file($pdfPath, [
+        return Response::file($pdfPath, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $fileName . '"'
         ]);
@@ -266,7 +268,7 @@ class LaraTeX
             $pdfPath = $this->generate();
             $fileName = basename($pdfPath);
 
-            \Event::dispatch(new LaratexPdfWasGenerated($fileName, 'content', $this->metadata));
+            Event::dispatch(new LaratexPdfWasGenerated($fileName, 'content', $this->metadata));
 
             if ($type == 'raw') {
                 $pdfContent = file_get_contents($pdfPath);
@@ -276,7 +278,7 @@ class LaraTeX
 
             return $pdfContent;
         } else {
-            \Event::dispatch(new LaratexPdfFailed($fileName, 'content', 'Wrong type set'));
+            Event::dispatch(new LaratexPdfFailed($fileName, 'content', 'Wrong type set'));
             return response()->json(['message' => 'Wrong type set. Use raw or base64.'], 400);
         }
     }
@@ -311,7 +313,7 @@ class LaraTeX
             $process = new Process($cmd);
             $process->run();
             if (!$process->isSuccessful()) {
-                \Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
+                Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
                 $this->parseError($tmpfname, $process);
             }
         }
