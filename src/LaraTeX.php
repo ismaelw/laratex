@@ -10,7 +10,7 @@ use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class LaraTeX
