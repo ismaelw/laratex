@@ -130,6 +130,11 @@ It is important that you always **start your path without a slash** and **end yo
 As seen in the section Garbage Collection this package deletes all temp files (log, aux etc.) created while generating the PDF file. When debugging successfully generated PDF files it can be useful to check the generated tex file.
 Set this setting to `false` if you don't want LaraTeX to delete those files after generating the PDF.
 
+**LARATEX_TIMEOUT** (Environment Variable)
+You can set the timeout for the pdflatex process using the `LARATEX_TIMEOUT` environment variable in your `.env` file.
+This is useful when generating large PDFs that take longer than the default 120 seconds to compile.
+Example: `LARATEX_TIMEOUT=300` (sets timeout to 5 minutes)
+
 ## Usage
 
 ### Dry Run

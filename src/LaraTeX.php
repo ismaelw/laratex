@@ -311,6 +311,7 @@ class LaraTeX
             }
 
             $process = new Process($cmd);
+            $process->setTimeout(env('LARATEX_TIMEOUT', 120));
             $process->run();
             if (!$process->isSuccessful()) {
                 Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
