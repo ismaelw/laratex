@@ -106,42 +106,53 @@ php artisan vendor:publish --tag=config
 After this please make sure to configure your LaraTeX installation.
 In your LaraTeX Config file `\config\laratex.php` you can configure these settings:
 
-**binPath**
+#### binPath
+
 If your system doesn't allow to just run the command line command "pdflatex" you may specify the correct one.
 On Unix systems you can find out which bin path to use by running the command `which pdflatex`
 
 If you are running this package with on a windows system please check this in cmd.exe before.
-There you should find out if running the command `pdflatex` works in cmd or if you need to provide the absolute path to your pdflatex application.
-If you cannot just run pdflatex you might have to add the path to your pdflatex compiler in your PATH system environment variables.
-Change the config or add/change the entry in your `.env` file:
+There you should find out if running the command `pdflatex` works in cmd or if you need to provide the absolute path to your pdflatex application.  
+If you cannot just run pdflatex you might have to add the path to your pdflatex compiler in your PATH system environment variables.  
+
+Change the config or add/change the entry in your `.env` file:  
 Example: `LARATEX_PATH=/usr/local/bin/pdflatex`
 
-**bibTexPath**
+#### bibTexPath
+
 If your system doesn't allow to just run the command line command "bibtex" you may specify the correct one.
 On Unix systems you can find out which bibtex path to use by running the command `which bibtex`
 
 If you are running this package with on a windows system please check this in cmd.exe before.
-There you should find out if running the command `bibtex` works in cmd or if you need to provide the absolute path to your bibtex application.
+There you should find out if running the command `bibtex` works in cmd or if you need to provide the absolute path to your bibtex application.  
 If you cannot just run bibtex you might have to add the path to your bibtex compiler in your PATH system environment variables.
-Change the config or add/change the entry in your `.env` file:
+
+Change the config or add/change the entry in your `.env` file:  
 Example: `LARATEX_BIBTEX_PATH=/usr/local/bin/bibtex`
 
-**tempPath**
+#### tempPath
+
 This specifies the folder where temporary files are saved while rendering a tex file into a PDF file.
 It is important that you always **start your path without a slash** and **end your path with a slash** (e.g. app/pdf/)
-Change the config or add/change the entry in your `.env` file:
+
+Change the config or add/change the entry in your `.env` file:  
 Example: `LARATEX_TEMP_PATH=app/latex-temp/`
 
-**teardown**
-As seen in the section Garbage Collection this package deletes all temp files (log, aux etc.) created while generating the PDF file. When debugging successfully generated PDF files it can be useful to check the generated tex file.
+#### teardown
+
+As seen in the section Garbage Collection this package deletes all temp files (log, aux etc.) created while generating the PDF file. When debugging successfully generated PDF files it can be useful to check the generated tex file.  
 Set this setting to `false` if you don't want LaraTeX to delete those files after generating the PDF.
-Change the config or add/change the entry in your `.env` file:
+
+Change the config or add/change the entry in your `.env` file:  
 Example: `LARATEX_TEARDOWN=false`
 
-**timeout**
+#### timeout
+
 You can set the timeout for the pdflatex process.
 This is useful when generating large PDFs that take longer than the default 120 seconds to compile.
-The default value is `120`. Change the config or add/change the entry in your `.env` file:
+The default value is `120`. 
+
+Change the config or add/change the entry in your `.env` file:  
 Example: `LARATEX_TIMEOUT=300` (sets timeout to 5 minutes)
 
 ## Usage
