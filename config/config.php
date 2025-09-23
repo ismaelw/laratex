@@ -1,15 +1,37 @@
 <?php
 
 return [
-	// bin path to your pdflatex installation | use 'which pdflatex' on a linux system to find out which is the path to your pdflatex installation
-	'binPath' => 'pdflatex',
 
-	// bin path to your bibtex installation | use 'which bibtex' on a linux system to find out which is the path to your bibtex installation
-	'bibTexPath' => 'bibtex',
+	/*
+    |--------------------------------------------------------------------------
+    | LaTeX & BibTeX Binaries
+    |--------------------------------------------------------------------------
+    | Defaults: 'pdflatex' and 'bibtex'
+    */
+	'binPath'    => env('LARATEX_PATH', 'pdflatex'),
+	'bibTexPath' => env('LARATEX_BIBTEX_PATH', 'bibtex'),
 
-	// Folder in your storage folder where you would like to store the temp files created by LaraTeX
-	'tempPath' => 'app/',
+	/*
+    |--------------------------------------------------------------------------
+    | Temporary Storage Path (relative to storage/)
+    |--------------------------------------------------------------------------
+    | Default 'app/'
+    */
+	'tempPath' => env('LARATEX_TEMP_PATH', 'app/'),
 
-	// boolean to define if log, aux and tex files should be deleted after generating PDF
-	'teardown' => true,
+	/*
+    |--------------------------------------------------------------------------
+    | Teardown (delete log/aux/tex after build)
+    |--------------------------------------------------------------------------
+    | Boolean; default true
+    */
+	'teardown' => (bool) env('LARATEX_TEARDOWN', true),
+
+	/*
+    |--------------------------------------------------------------------------
+    | Process Timeout (seconds)
+    |--------------------------------------------------------------------------
+    | For larger documents increase the timeout. default 120s
+    */
+	'timeout' => (int) env('LARATEX_TIMEOUT', 120),
 ];

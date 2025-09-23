@@ -71,6 +71,7 @@ class LaraTeX
     protected $bibTexPath;
     protected $tempPath;
     protected $doTeardown = true;
+    protected $timeout = 120;
 
     /**
      * Construct the instance
@@ -84,6 +85,7 @@ class LaraTeX
         $this->tempPath = config('laratex.tempPath');
         $this->bibTexPath = config('laratex.bibTexPath');
         $this->doTeardown = config('laratex.teardown');
+        $this->timeout = config('laratex.timeout', 120);
         if ($stubPath instanceof RawTex) {
             $this->isRaw = true;
             $this->renderedTex = $stubPath->getTex();
@@ -311,7 +313,7 @@ class LaraTeX
             }
 
             $process = new Process($cmd);
-            $process->setTimeout(env('LARATEX_TIMEOUT', 120));
+            $process->setTimeout($this->timeout);
             $process->run();
             if (!$process->isSuccessful()) {
                 Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
