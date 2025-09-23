@@ -32,5 +32,6 @@ abstract class TestCase extends BaseTestCase
         $app['config']->set('laratex.bibTexPath', 'bibtex');
         $app['config']->set('laratex.tempPath', 'app/');
         $app['config']->set('laratex.teardown', true);
+        $app['config']->set('laratex.timeout', 120);
     }
 }
