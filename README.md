@@ -55,6 +55,7 @@
             <li><a href="#bulk-download-in-a-zip-archive">Bulk download in a ZIP archive</a></li>
         </ul>
     </li>
+    <li><a href="#tests">Tests</a></li>
     <li><a href="#convert-html-to-latex-beta">Convert HTML to LaTeX BETA</a></li>
     <li><a href="#garbage-collection">Garbage Collection</a></li>
     <li><a href="#error-handling">Error Handling</a></li>
@@ -562,6 +563,16 @@ return $latexCollection->downloadZip('Users.zip');
 // OR you can also save it
 $latexCollection->saveZip(storage_path('app/pdf/zips/Users.zip'));
 ```
+
+## Tests
+
+To run the test suite, simply execute:
+
+```bash
+composer test
+```
+
+This will run all automated tests and validate the core functionality of the package.
 
 ## Convert HTML to LaTeX BETA
 
