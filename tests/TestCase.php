@@ -10,7 +10,7 @@ use Orchestra\Testbench\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     protected $latex;
-    protected static $latestResponse;
+    public static $latestResponse;
 
     protected function setUp(): void
     {
