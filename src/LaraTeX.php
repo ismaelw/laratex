@@ -280,7 +280,7 @@ class LaraTeX
 
             return $pdfContent;
         } else {
-            Event::dispatch(new LaratexPdfFailed($fileName, 'content', 'Wrong type set'));
+            Event::dispatch(new LaratexPdfFailed('', 'content', 'Wrong type set'));
             return response()->json(['message' => 'Wrong type set. Use raw or base64.'], 400);
         }
     }
@@ -423,7 +423,7 @@ class LaraTeX
      * @param array $override
      * 
      */
-    public function convertHtmlToLatex(string $Input, array $Override = NULL)
+    public function convertHtmlToLatex(string $Input, ?array $Override = null)
     {
         $Input = $this->htmlEntitiesFix($Input, ENT_QUOTES | ENT_HTML401);
 
