@@ -4,7 +4,6 @@ namespace Ismaelw\LaraTeX;
 
 use Ismaelw\LaraTeX\LaraTeX;
 use Ismaelw\LaraTeX\LaratexEmptyCollectionException;
-use Ismaelw\LaraTeX\LaratexException;
 use Ismaelw\LaraTeX\LaratexZipFailedException;
 use Illuminate\Support\Str;
 
@@ -116,13 +115,12 @@ class LaratexCollection
     }
 
     /**
-     * PPdf generation
+     * PDF generation
      *
      * @return void
      * @throws LaratexEmptyCollectionException
      */
     private function generate(){
-
         if(count($this->collection) == 0){
 
             throw new LaratexEmptyCollectionException('No latex documents added in latex collection. Nothing to generate.');
@@ -139,7 +137,6 @@ class LaratexCollection
      * @return void
      */
     private function moveToCollectionDir(){
-
         $this->makeCollectionDir();
 
         foreach ($this->collection as $latex) {

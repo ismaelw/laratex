@@ -16,7 +16,6 @@ class RawTex
      * @param string $tex
      */
     public function __construct($tex){
-
     	$this->tex = $tex;
     }
 
@@ -26,7 +25,6 @@ class RawTex
      * @return string
      */
     public function getTex(){
-
     	return $this->tex;
     }
 }

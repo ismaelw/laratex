@@ -6,12 +6,12 @@ use Ismaelw\LaraTeX\LaratexException;
 use Ismaelw\LaraTeX\LaratexPdfWasGenerated;
 use Ismaelw\LaraTeX\LaratexPdfFailed;
 use Ismaelw\LaraTeX\ViewNotFoundException;
+use Ismaelw\LaraTeX\LaratexInvalidArgumentException;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class LaraTeX
 {
@@ -66,7 +66,6 @@ class LaraTeX
      */
     public bool $generateBibtex = false;
 
-
     protected $binPath;
     protected $bibTexPath;
     protected $tempPath;
@@ -103,10 +102,11 @@ class LaraTeX
      * @return LaraTeX
      */
     public function compileAmount($compileAmount){
-
-        if(is_integer($compileAmount)){
-            $this->compileAmount = $compileAmount;
+        if (!is_int($compileAmount) || $compileAmount < 1) {
+            throw new LaratexInvalidArgumentException('compileAmount must be an integer greater than or equal to 1.');
         }
+
+        $this->compileAmount = $compileAmount;
 
         return $this;
     }
@@ -199,7 +199,7 @@ class LaraTeX
     public function savePdf($location)
     {
         $this->render();
-        $pdfPath = $this->generate();
+        $pdfPath = $this->generate('savepdf');
         $fileMoved = File::move($pdfPath, $location);
         Event::dispatch(new LaratexPdfWasGenerated($location, 'savepdf', $this->metadata));
         return $fileMoved;
@@ -217,7 +217,7 @@ class LaraTeX
             $this->render();
         }
 
-        $pdfPath = $this->generate();
+        $pdfPath = $this->generate('download');
         if (!$fileName) {
             $fileName = basename($pdfPath);
         }
@@ -241,7 +241,7 @@ class LaraTeX
             $this->render();
         }
 
-        $pdfPath = $this->generate();
+        $pdfPath = $this->generate('inline');
         if (!$fileName) {
             $fileName = basename($pdfPath);
         }
@@ -267,7 +267,7 @@ class LaraTeX
                 $this->render();
             }
 
-            $pdfPath = $this->generate();
+            $pdfPath = $this->generate('content');
             $fileName = basename($pdfPath);
 
             Event::dispatch(new LaratexPdfWasGenerated($fileName, 'content', $this->metadata));
@@ -290,8 +290,13 @@ class LaraTeX
      *
      * @return string
      */
-    private function generate()
+    private function generate(string $action = 'download')
     {
+        if ($this->generateBibtex && $this->compileAmount < 2) {
+            Event::dispatch(new LaratexPdfFailed('', 'generate', 'compileAmount must be at least 2 when Bibtex generation is enabled.'));
+            throw new LaratexInvalidArgumentException('compileAmount must be at least 2 when Bibtex generation is enabled.');
+        }
+
         $fileName = Str::random(10);
         $basetmpfname = tempnam(storage_path($this->tempPath), $fileName);
         $tmpfname = preg_replace('/\\.[^.\\s]{3,4}$/', '', $basetmpfname);
@@ -304,32 +309,33 @@ class LaraTeX
         $program    = $this->binPath ? $this->binPath : 'pdflatex';
         $cmd        = [$program, '-output-directory', $tmpDir, $tmpfname];
 
-        for ($i = 1; $i <= $this->compileAmount; $i++) {
+        try {
+            for ($i = 1; $i <= $this->compileAmount; $i++) {
+                // BibTeX must be executed after the first generation of the LaTeX file.
+                if ($i === 2 && $this->generateBibtex) {
+                    $bibtex = new Process([$this->bibTexPath, basename($tmpfname)], $tmpDir);
+                    $bibtex->run();
+                }
 
-            // BibTeX must be run after the first generation of the LaTeX file.
-            if ($i === 2 && $this->generateBibtex) {
-                $bibtex = new Process([$this->bibTexPath, basename($tmpfname)], $tmpDir);
-                $bibtex->run();
+                $process = new Process($cmd);
+                $process->setTimeout($this->timeout);
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    Event::dispatch(new LaratexPdfFailed($fileName, $action, $this->metadata));
+                    $this->parseError($tmpfname, $process);
+                }
+            }
+        } finally {
+            if ($this->doTeardown) {
+                $this->teardown($tmpfname);
             }
 
-            $process = new Process($cmd);
-            $process->setTimeout($this->timeout);
-            $process->run();
-            if (!$process->isSuccessful()) {
-                Event::dispatch(new LaratexPdfFailed($fileName, 'download', $this->metadata));
-                $this->parseError($tmpfname, $process);
-            }
+            register_shutdown_function(function () use ($tmpfname) {
+                if (File::exists($tmpfname . '.pdf')) {
+                    File::delete($tmpfname . '.pdf');
+                }
+            });
         }
-
-        if ($this->doTeardown) {
-            $this->teardown($tmpfname);
-        }
-
-        register_shutdown_function(function () use ($tmpfname) {
-            if (File::exists($tmpfname . '.pdf')) {
-                File::delete($tmpfname . '.pdf');
-            }
-        });
 
         return $tmpfname . '.pdf';
     }
@@ -362,8 +368,9 @@ class LaraTeX
      * Throw error from log file
      *
      * @param  string $tmpfname
+     * @param  \Symfony\Component\Process\Process $process
      *
-     * @throws \LaratexException
+     * @throws \Ismaelw\LaraTeX\LaratexException
      */
     private function parseError($tmpfname, $process)
     {
@@ -425,7 +432,7 @@ class LaraTeX
      */
     public function convertHtmlToLatex(string $Input, ?array $Override = null)
     {
-        $Input = $this->htmlEntitiesFix($Input, ENT_QUOTES | ENT_HTML401);
+        $Input = $this->htmlEntitiesFix($Input, ENT_QUOTES | ENT_HTML401 | ENT_HTML5);
 
         $ReplaceDictionary = array(
             array('tag' => 'p', 'extract' => 'value', 'replace' => '$1 \newline '),

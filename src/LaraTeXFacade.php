@@ -5,7 +5,7 @@ namespace Ismaelw\LaraTeX;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Ismaelw\LaraTeX\Skeleton\SkeletonClass
+ * @see \Ismaelw\LaraTeX\LaraTeX
  */
 class LaraTeXFacade extends Facade
 {

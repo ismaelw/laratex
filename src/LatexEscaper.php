@@ -2,7 +2,6 @@
 
 namespace Ismaelw\LaraTeX;
 
-
 class LatexEscaper
 {
     /**
