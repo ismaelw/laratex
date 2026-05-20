@@ -312,7 +312,7 @@ class LaraTeX
                 $bibtex->run();
             }
 
-            $process = new Process($cmd);
+            $process = new Process($cmd, $tmpDir);
             $process->setTimeout($this->timeout);
             $process->run();
             if (!$process->isSuccessful()) {
